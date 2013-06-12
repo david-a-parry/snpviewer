@@ -1,0 +1,327 @@
+/* 
+    Document   : SnpViewerStyleSheet
+    Created on : May 6, 2013, 3:58:03 PM
+    Author     : david
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.root{ 
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+
+}
+.anchor-pane{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+    -fx-border-color: #000000;
+}
+.scroll-pane{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+    -fx-border-color: #000000;
+}
+.titled-pane{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+}
+
+.pane{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+}
+
+.whitepane{
+    -fx-background-color: #ffffff
+}
+
+.labelpane{
+    -fx-background-color: rgba(90%,90%,90%,0.3)
+}
+.check-box{
+    -fx-text-fill: white;
+}
+.check-box *.box{
+    -fx-background-color: white
+}
+.check-box *.mark{
+}
+
+
+
+.list-view{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+    -fx-text-fill: white
+}
+
+.color-picker{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+    -fx-text-fill: white
+}
+.color-picker:hover{
+    -fx-background-color: black;
+}
+.color-picker:hover * .arrow{
+    -fx-background-color: black;
+    -fx-border-color: white;
+}
+
+.choice-box{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+    -fx-text-fill: white
+}
+
+.choice-box:hover{
+    -fx-background-color: black;
+}
+
+.choice-box:hover * .arrow{
+    -fx-background-color: black;
+    -fx-border-color: white;
+}
+
+.context-menu {
+-fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+    -fx-text-fill: white
+}
+#choice-box-menu-item:hover {
+}
+
+
+.radio-menu-item:checked *.radio{
+    -fx-background-color: white;
+}
+.FlowPane{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+    -fx-text-fill: white
+    
+}
+.combo-box{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+    -fx-text-fill: white
+}
+
+
+
+.label{
+    -fx-text-fill:white
+}
+
+.text-field{
+    -fx-text-fill: white;
+    -fx-background-color: transparent
+}
+
+.text-area{
+    -fx-text-fill: white;
+    -fx-background-color: transparent
+}
+.button{
+    -fx-background-color: linear-gradient(#EEEEFF, #CCCCCC);
+    -fx-text-fill: black;
+
+}
+.button:pressed{
+    -fx-background-color: linear-gradient(#CCCCFF, #FFFFFF);
+    -fx-text-fill: black;
+
+}
+.button:hover{
+    -fx-background-color: white;    
+    -fx-text-fill: black;
+}
+.button:default{
+    -fx-background-color: linear-gradient(#FFFFFF, #EEEEFF);    
+    -fx-text-fill: black;
+}
+.button:default:hover{
+    -fx-background-color: white;    
+    -fx-text-fill: black;
+}
+.button:default:pressed{
+    -fx-background-color: linear-gradient(#CCCCFF, #FFFFFF);    
+    -fx-text-fill: black;
+}
+
+.tab-pane{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+}
+
+.tab:selected {
+    -fx-background-color: #686868;
+}
+.tab {
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+}
+
+.tab-content-area {
+     -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+}
+
+.tab *.tab-label {
+    -fx-text-fill: white;
+}
+.tab-header-background{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+}
+
+.table-view{
+    -fx-background-color: black;
+    -fx-text-fill: white;
+}
+.table-row-cell:odd{
+        -fx-background-color: #3a3a3a;
+}
+.table-row-cell:even{
+        -fx-background-color: #202020;
+}
+
+.table-cell{
+    -fx-text-fill: white
+}
+.column-header-background{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+    -fx-border-color: #555555;
+}
+
+.progress-bar{
+    
+}
+
+.scroll-bar{
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+    -fx-border-color: #000000;
+}
+
+.scroll-bar *.track{
+    -fx-background-color: black
+}
+
+.scroll-bar *.thumb{
+    -fx-background-color:
+        linear-gradient(#c8c8c8 0%, #838783 25%, #979897 75%, #d5d5d5 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#ffffff 0%, #cbcacb 20%, #c495c4 80%, #848484 100%),
+        linear-gradient(#eaeaea 0%, #cbcacb 20%, #c4c5c4 80%, #868686 100%),
+        linear-gradient(#dddddd 0%, #bbbbbb 30%, #a0a0aa 51%, #8a8b8a 100%);
+    -fx-border-color: black;
+    -fx-background-radius: 5px;
+    -fx-background-insets: 3;
+}
+
+.scroll-bar *.decrement-button{
+    -fx-background-color: black
+}
+
+.scroll-bar *.increment-button{
+    -fx-background-color: black
+}
+
+.scroll-bar *.decrement-button *.decrement-arrow{
+    -fx-background-color: white
+}
+
+.scroll-bar *.increment-button *.increment-arrow{
+    -fx-background-color: white
+}
+
+.corner{
+    -fx-background-color: black
+}
+
+.titled-pane *.title {
+   -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),
+        linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);
+   -fx-text-fill: white;
+   
+    
+}
+.tooltip{
+    -fx-background-color: #0033cc;
+    -fx-text-fill: white;
+        
+}

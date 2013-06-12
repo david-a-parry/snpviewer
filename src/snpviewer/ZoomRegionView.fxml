@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="850.0000999999975" xmlns:fx="http://javafx.com/fxml" fx:controller="snpviewer.ZoomRegionViewController">
+  <children>
+    <SplitPane fx:id="splitPane" dividerPositions="0.5009823182711198" focusTraversable="true" orientation="VERTICAL" prefHeight="511.0" prefWidth="850.0000999999975" AnchorPane.bottomAnchor="39.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <items>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+      </items>
+    </SplitPane>
+    <Pane fx:id="selectionOverlayPane" prefHeight="511.0" prefWidth="850.0000999999975" AnchorPane.bottomAnchor="39.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    <HBox id="HBox" alignment="CENTER_RIGHT" prefWidth="480.0001212358475" spacing="5.0" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="14.0">
+      <children>
+        <Label minWidth="-Infinity" prefWidth="69.99993896484375" text="Selection:" />
+        <TextField fx:id="selectionIndicator" editable="false" prefWidth="236.0000067949295" HBox.hgrow="SOMETIMES" />
+        <Button fx:id="okButton" defaultButton="true" maxHeight="21.0" maxWidth="41.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="21.0" prefWidth="41.0" text="OK" />
+      </children>
+    </HBox>
+    <HBox id="HBox" alignment="CENTER" prefWidth="342.0" spacing="5.0" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="14.0">
+      <children>
+        <Label text="Position:" />
+        <TextField fx:id="regionField" prefWidth="236.0" />
+      </children>
+    </HBox>
+  </children>
+</AnchorPane>

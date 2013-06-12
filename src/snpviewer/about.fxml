@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?scenebuilder-stylesheet SnpViewerStyleSheet.css?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="227.0" prefWidth="576.0" xmlns:fx="http://javafx.com/fxml" fx:controller="snpviewer.AboutController">
+  <children>
+    <ImageView id="icon" fitHeight="172.0" fitWidth="170.0" pickOnBounds="true" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
+      <image>
+        <Image url="@icon.png" preserveRatio="true" smooth="true" />
+      </image>
+    </ImageView>
+    <Button fx:id="closeButton" mnemonicParsing="false" text="Close" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="17.0" />
+    <Label fx:id="versionLabel" prefWidth="232.0" text="Version" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="214.0" AnchorPane.rightAnchor="130.0" />
+    <Text fill="WHITE" fontSmoothingType="LCD" smooth="true" strikethrough="false" stroke="#560099" strokeLineCap="ROUND" strokeLineJoin="BEVEL" strokeMiterLimit="4.3" strokeType="OUTSIDE" strokeWidth="0.5" text="Snp Viewer" underline="false" AnchorPane.leftAnchor="287.5" AnchorPane.rightAnchor="115.5" AnchorPane.topAnchor="14.03">
+      <font>
+        <Font size="32.0" />
+      </font>
+    </Text>
+    <TextArea editable="false" prefHeight="135.0" prefWidth="353.0" text="Copyright (C) 2013 David A. Parry&#10;&#10;Email d.a.parry@leeds.ac.uk&#10;&#10;For help and documentation please visit: &#10;&#10;https://sourceforge.net/projects/snpviewer/&#10;&#10;Snp Viewer - a program for viewing SNP data and identifying regions of homozygosity&#10; &#10;Copyright (C) 2013 David A. Parry&#10;  &#10;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.&#10;&#10;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.&#10;&#10;You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.&#10; &#10;" wrapText="true" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="206.0" AnchorPane.rightAnchor="17.0" AnchorPane.topAnchor="51.0" />
+  </children>
+</AnchorPane>

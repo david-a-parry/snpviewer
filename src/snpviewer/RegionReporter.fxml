@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="101.5" prefWidth="374.0" xmlns:fx="http://javafx.com/fxml" fx:controller="snpviewer.RegionReporterController">
+  <children>
+    <HBox id="HBox" alignment="CENTER" spacing="5.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="11.0">
+      <children>
+        <Label fx:id="idLabel" prefWidth="78.0" text="rs IDs:" textAlignment="RIGHT" />
+        <TextField fx:id="idField" editable="false" prefWidth="252.0" HBox.hgrow="ALWAYS" />
+      </children>
+    </HBox>
+    <HBox id="HBox" alignment="CENTER" layoutY="41.0" spacing="5.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="25.0">
+      <children>
+        <Label fx:id="coordLabel" text="coordinates:" textAlignment="RIGHT" />
+        <TextField fx:id="coordField" editable="false" prefWidth="252.0" HBox.hgrow="ALWAYS" />
+      </children>
+    </HBox>
+    <Button fx:id="okButton" defaultButton="true" mnemonicParsing="false" onAction="#okButtonFired" text="OK" AnchorPane.bottomAnchor="6.5" AnchorPane.rightAnchor="25.0" />
+  </children>
+</AnchorPane>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="598.999977929685" prefWidth="1011.0002558593624" style="-fx-background-color:&#10; linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),&#10;        linear-gradient(#020b02, #3a3a3a),&#10;        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #643564 80%, #242424 100%),&#10;        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #646564 80%, #262626 100%),&#10;linear-gradient(#777777 0%, #555555 30%, #40404a 51%, #2a2b2a 100%);&#10;" xmlns:fx="http://javafx.com/fxml" fx:controller="snpviewer.SnpViewer">
+  <children>
+    <StackPane fx:id="mainPane" onDragDone="#windowResized" prefHeight="554.0000999999975" prefWidth="907.999977929685" style="-fx-background-color: transparent" AnchorPane.bottomAnchor="119.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="46.0">
+      <children>
+        <SplitPane fx:id="horizontalSplit" dividerPositions="0.18775510204081633" focusTraversable="true" prefHeight="160.0" prefWidth="200.0" style="-fx-background-color: transparent;&#10;-fx-border-color: white">
+          <items>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="430.0" prefWidth="185.9998779296875" style="-fx-background-color: transparent">
+              <children>
+                <SplitPane fx:id="labelSplitPane" dividerPositions="0.9929906542056075" focusTraversable="true" orientation="VERTICAL" prefHeight="480.0" prefWidth="90.0" style="-fx-background-color: rgba(90%,90%,90%,0.3) " AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <items>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" style="-fx-background-color: transparent" />
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" style="-fx-background-color: transparent" />
+                  </items>
+                </SplitPane>
+              </children>
+            </AnchorPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="">
+              <children>
+                <SplitPane fx:id="chromSplitPane" dividerPositions="0.9929906542056075" focusTraversable="true" orientation="VERTICAL" prefHeight="480.0" prefWidth="674.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <items>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                  </items>
+                </SplitPane>
+                <Pane fx:id="selectionOverlayPane" prefHeight="432.0000999999975" prefWidth="743.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+              </children>
+            </AnchorPane>
+          </items>
+        </SplitPane>
+      </children>
+    </StackPane>
+    <MenuBar fx:id="mainMenu" prefHeight="26.0" prefWidth="935.9998779296875" style="-fx-background-color: transparent&#10;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="File" fx:id="fileMenu">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#newProjectFired" text="New Project" fx:id="newProjectMenu" />
+            <MenuItem mnemonicParsing="false" onAction="#loadProject" text="Load Project" fx:id="loadProjectMenu" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#drawPaneToPng" text="Save View to Image (.png)" fx:id="saveToPngMenu" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#cacheChromsFired" text="Cache All Chromosome Images" fx:id="cacheChromsMenu" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#loadColourScheme" text="Load Colour Scheme" fx:id="loadColoursMenu" />
+            <MenuItem mnemonicParsing="false" onAction="#saveColours" text="Save Colour Scheme" fx:id="saveColoursMenu" />
+            <MenuItem mnemonicParsing="false" onAction="#resetColours" text="Reset Colours" fx:id="resetColoursMenu" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#closeButtonFired" text="Close" fx:id="closeMenu" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Samples" fx:id="sampleMenu">
+          <items>
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#affButtonFired" text="Add Affected" fx:id="addAffSampleMenu" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#unButtonFired" text="Add Unffected" fx:id="addUnSampleMenu" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#removeSamples" text="Remove Sample" fx:id="removeSampleMenu" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Go" fx:id="goMenu">
+          <items>
+            <MenuItem disable="true" mnemonicParsing="false" text="Next Chromosome" fx:id="nextChromMenu" />
+            <MenuItem disable="true" mnemonicParsing="false" text="Previous Chromosome" fx:id="prevChromMenu" />
+            <MenuItem disable="true" mnemonicParsing="false" text="First Chromosome" fx:id="firstChromMenu" />
+            <MenuItem disable="true" mnemonicParsing="false" text="Last Chromosome" fx:id="lastChromMenu" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#redrawButtonFired" text="Redraw Current View" fx:id="redrawMenu" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Regions">
+          <items>
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#autoFindRegions" text="Find Regions" fx:id="autoFindRegions" />
+            <CheckMenuItem disable="true" mnemonicParsing="false" text="Hide Saved Regions" fx:id="hideSavedRegionsMenu" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#writeSavedRegionsToFile" text="Output Saved Regions To File" fx:id="outputSavedRegionsMenu" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#showSavedRegionsTable" text="Show Saved Regions Table" fx:id="displaySavedsRegionsMenu" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#clearSavedRegionsFired" text="Clear Saved Regions" fx:id="clearSavedRegionsMenu" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Call Quality Filter">
+          <items>
+            <RadioMenuItem disable="true" mnemonicParsing="false" selected="true" text="No Filtering" fx:id="noFilteringRadio" />
+            <RadioMenuItem disable="true" mnemonicParsing="false" text="85% Confidence or Greater" fx:id="filter85" />
+            <RadioMenuItem disable="true" mnemonicParsing="false" text="90% Confidence or Greater" fx:id="filter90" />
+            <RadioMenuItem disable="true" mnemonicParsing="false" text="95% Confidence or Greater" fx:id="filter95" />
+            <RadioMenuItem disable="true" mnemonicParsing="false" text="99% Confidence or Greater" fx:id="filter99" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help" fx:id="helpMenu">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About" fx:id="aboutMenu" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+    <HBox id="HBox" alignment="CENTER_LEFT" prefHeight="58.0" prefWidth="754.999977929685" spacing="10.0" AnchorPane.bottomAnchor="-6.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="151.0">
+      <children>
+        <Button fx:id="addAffected" disable="true" mnemonicParsing="false" onAction="#affButtonFired" style="" text="Add Affected">
+          <font>
+            <Font size="12.0" fx:id="x1" />
+          </font>
+        </Button>
+        <Button fx:id="addUnaffected" disable="true" focusTraversable="false" font="$x1" mnemonicParsing="false" onAction="#unButtonFired" style="" text="Add Unaffected" />
+        <Label style="-fx-text-fill:white" text="Position:" />
+        <Label fx:id="positionIndicator" style="-fx-text-fill:white" text="-" />
+        <Label style="-fx-text-fill:white" text="Selection:" />
+        <TextField fx:id="selectionIndicator" disable="false" editable="false" prefWidth="232.0" style="" />
+        <Label style="-fx-text-fill:white" text="Build:" />
+        <Label fx:id="buildLabel" style="-fx-text-fill:white" />
+      </children>
+    </HBox>
+    <ProgressBar id="debugProgress" fx:id="progressBar" prefWidth="701.0" progress="0.0" AnchorPane.bottomAnchor="92.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="85.0" />
+    <HBox id="HBox" alignment="CENTER" spacing="5.0" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="16.0">
+      <children>
+        <Label contentDisplay="RIGHT" prefWidth="60.99999916553497" text="Chrom:" textAlignment="RIGHT" />
+        <ChoiceBox fx:id="chromosomeSelector" disable="false" prefHeight="21.9998779296875" prefWidth="64.0" />
+      </children>
+    </HBox>
+    <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" style=";" text="Cancel" AnchorPane.bottomAnchor="87.0" AnchorPane.rightAnchor="15.0" />
+    <Label fx:id="progressTitle" style="-fx-text-fill:white" AnchorPane.bottomAnchor="71.0" AnchorPane.leftAnchor="14.0" />
+    <Label fx:id="progressMessage" style="-fx-text-fill:white" textAlignment="RIGHT" AnchorPane.bottomAnchor="68.0" AnchorPane.rightAnchor="85.0" />
+    <HBox id="HBox" alignment="CENTER" prefWidth="905.999977929685" spacing="5.0" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="16.0">
+      <children>
+        <Button fx:id="newProjectButton" font="$x1" mnemonicParsing="false" onAction="#newProjectFired" style="" text="New Project" />
+        <Button fx:id="loadProjectButton" font="$x1" mnemonicParsing="false" onAction="#loadProject" style=";" text="Load Project" />
+        <Separator minHeight="0.0" prefHeight="0.0" prefWidth="38.0" visible="false" />
+        <Button fx:id="cacheChromsButton" disable="true" font="$x1" mnemonicParsing="false" onAction="#cacheChromsFired" text="Cache Images" />
+        <Button fx:id="findRegionsButton" disable="true" font="$x1" mnemonicParsing="false" onAction="#autoFindRegions" text="Find Regions" />
+        <Separator prefWidth="78.0" visible="false" HBox.hgrow="ALWAYS" />
+        <Button fx:id="redrawButton" disable="true" font="$x1" mnemonicParsing="false" onAction="#redrawButtonFired" text="Redraw" />
+        <CheckBox fx:id="redrawCheckBox" mnemonicParsing="false" prefWidth="173.0" selected="false" style="-fx-text-fill:white" text="Redraw Automatically" />
+        <ChoiceBox fx:id="colorComponantSelector" prefWidth="80.0">
+          <items>
+            <FXCollections fx:factory="observableArrayList">
+              <String fx:value="Item 1" />
+              <String fx:value="Item 2" />
+              <String fx:value="Item 3" />
+            </FXCollections>
+          </items>
+        </ChoiceBox>
+        <ColorPicker fx:id="colorPicker" editable="true" />
+      </children>
+    </HBox>
+    <Label fx:id="projectLabel" alignment="CENTER_RIGHT" prefWidth="410.99999153614044" style="-fx-text-fill:white" text="" textAlignment="RIGHT" wrapText="false" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="30.0" />
+    <Label font="$x1" layoutX="17.0" layoutY="26.0" text="Quality Filtering:" />
+    <Label font="$x1" layoutX="120.0" layoutY="26.0" text="None" />
+  </children>
+</AnchorPane>

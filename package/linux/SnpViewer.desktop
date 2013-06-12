@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=SnpViewer
+Comment=SnpViewer
+Exec=/opt/SnpViewer/SnpViewer
+Icon=/opt/SnpViewer/SnpViewer.png
+Terminal=false
+Type=Application
+Categories=Science;
