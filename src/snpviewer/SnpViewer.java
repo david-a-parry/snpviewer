@@ -131,7 +131,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class SnpViewer extends Application implements Initializable, Serializable {
     
-    String VERSION = "0.9.1";
+    String VERSION = "0.9.2";
     
     ArrayList<SnpFile> affFiles = new ArrayList<>();
     ObservableList<SnpFile> affObserve = FXCollections.observableList(affFiles);
@@ -385,7 +385,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         cacheChromsMenu.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         saveToPngMenu.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         autoFindRegions.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
-        //hideSavedRegionsMenu.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
+        hideSavedRegionsMenu.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         clearSavedRegionsMenu.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         displaySavedsRegionsMenu.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN));
         outputSavedRegionsMenu.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
@@ -700,7 +700,9 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                  * next() call will make this object represent the first change.
                  */
                 if (change.getRemovedSize() > 0){
-                    recheckChromosomeSelector(affFiles);
+                    List<SnpFile> both = new ArrayList<>(unFiles);
+                    both.addAll(affFiles);
+                    recheckChromosomeSelector(both);//need to check all files again, not just affFiles
                 }else if (change.getAddedSize() > 0){
                     addToChromosomeSelector(affFiles);
                 }
@@ -715,7 +717,9 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             public void onChanged(ListChangeListener.Change change){
                 change.next();
                 if (change.getRemovedSize() > 0){
-                    recheckChromosomeSelector(unFiles);
+                    List<SnpFile> both = new ArrayList<>(unFiles);
+                    both.addAll(affFiles);
+                    recheckChromosomeSelector(both);//need to check all files again, not just unFiles
                 }else if (change.getAddedSize() > 0){
                     addToChromosomeSelector(unFiles);
                 }
@@ -1567,12 +1571,13 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     
     public void refreshView(String chrom, boolean forceRedraw){
         //if forceRedraw is false look for existing png files for each snpFile
-            if (chrom == null){
+        if (chrom == null){
         /*if null is passed then select/reselect chromosome from 
          * chromosomeSelector, return and let chromosomeSelector's 
          * listener refire this method
          */
             if (chromosomeSelector.getSelectionModel().isEmpty()){
+                chromosomeSelector.getSelectionModel().clearSelection();
                 chromosomeSelector.getSelectionModel().selectFirst();
             }else{
                    int sel = chromosomeSelector.getSelectionModel().getSelectedIndex();
@@ -2183,7 +2188,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
             List<Integer> indicesToRemove = removeController.getSamplesToRemove();
-            System.out.println(indicesToRemove.toString());
+            //System.out.println(indicesToRemove.toString());
             if (indicesToRemove.isEmpty()){
                 return;
             }
@@ -2570,7 +2575,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                chromosomeSelector.requestFocus();
            }
     }
-    public void recheckChromosomeSelector(ArrayList<SnpFile> sFiles){
+    public void recheckChromosomeSelector(List<SnpFile> sFiles){
         /*in case a SnpFile has been removed we clear the menu first
          */
                             
@@ -2820,7 +2825,9 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                  * next() call will make this object represent the first change.
                  */
                 if (change.getRemovedSize() > 0){
-                    recheckChromosomeSelector(affFiles);
+                    List<SnpFile> both = new ArrayList<>(unFiles);
+                    both.addAll(affFiles);
+                    recheckChromosomeSelector(both);
                 }else if (change.getAddedSize() > 0){
                     addToChromosomeSelector(affFiles);
                 }
@@ -2835,7 +2842,9 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             public void onChanged(ListChangeListener.Change change){
                 change.next();
                 if (change.getRemovedSize() > 0){
-                    recheckChromosomeSelector(unFiles);
+                    List<SnpFile> both = new ArrayList<>(unFiles);
+                    both.addAll(affFiles);
+                    recheckChromosomeSelector(both);
                 }else if (change.getAddedSize() > 0){
                     addToChromosomeSelector(unFiles);
                 }
