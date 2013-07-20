@@ -2,37 +2,27 @@
     <description>Builds, tests, and runs the project SNPviewer.</description>
     <import file="nbproject/build-impl.xml"/>
        <target name="-post-jfx-deploy">
-       
        <fx:deploy width="${javafx.run.width}" height="${javafx.run.height}" 
                   nativeBundles="all"
-                  verbose="true"
+		  verbose="true"
                   outdir="${basedir}/${dist.dir}" outfile="${application.title}">
           <fx:application name="${application.title}" 
                           mainClass="${javafx.main.class}"
+			  version="0.9.2"
 			  id="SnpViewer"/>
-          <fx:info category="Science" />
           <fx:resources>
-              <fx:fileset dir="dist" includes="*.jar"/>  
-              <fx:fileset dir="dist" includes="lib/*.jar"/>
-              <fx:fileset dir="package/linux" includes = "*"/>          
-            <fx:fileset dir="${basedir}/native/${os.name}/${os.arch}"
-                    type="data">
-                <include name="*.jnilib"/>
-                <include name="*.so"/>
-            </fx:fileset>
-            
+              <fx:fileset dir="${basedir}/${dist.dir}"
+                          includes="*.jar"/>
+              <fx:fileset dir="${basedir}/${dist.dir}/lib"
+                          includes="*.jar"/>
           </fx:resources>
-          
           <fx:info title="${application.title}" 
                    vendor="${application.vendor}"/>
           <fx:platform>
                <fx:jvmarg value="-Xms1024m"/>
                <!--<fx:jvmarg value="-XX:-UseGCOverheadLimit"/>-->
           </fx:platform>
-        </fx:deploy>      
-          <mkdir dir="${basedir}/${dist.dir}/bundles/${application.title}/runtime/jre/lib/${os.arch}/client"/>
-        <copy file="${basedir}/native/${os.name}/${os.arch}/libjvm.so" todir="${basedir}/${dist.dir}/bundles/${application.title}/runtime/jre/lib/${os.arch}/client">
-                        </copy>  
+        </fx:deploy>          
      </target>
     <!--
 
