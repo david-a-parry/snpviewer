@@ -209,8 +209,10 @@ public class RegionFinder extends Service{
                                             getSnpsByCoordinate(affFileLines.get(nextAff), 
                                             sharedRegions.get(j).getStartPos(), 
                                             sharedRegions.get(j).getEndPos());
-                                    if (! isConcordant(firstAffLines, nextAffLines)){
-                                        indicesToRemove.add(j);
+                                    if (firstAffLines != null && nextAffLines != null){
+                                        if (! isConcordant(firstAffLines, nextAffLines)){
+                                            indicesToRemove.add(j);
+                                        }
                                     }
                                 }
                                 for (int j = 0; j < indicesToRemove.size(); j++){
@@ -244,8 +246,10 @@ public class RegionFinder extends Service{
                                     List<SnpFile.SnpLine> unLines = 
                                                 getSnpsByCoordinate(lines, 
                                                 unshare.getStartPos(), unshare.getEndPos());
-                                    if (isConcordant(firstAffLines, unLines)){
-                                        subtractRegion(sharedRegions, unshare);
+                                    if (firstAffLines != null && unLines != null){
+                                        if (isConcordant(firstAffLines, unLines)){
+                                            subtractRegion(sharedRegions, unshare);
+                                        }
                                     }
                                 }else{
                                     subtractRegion(sharedRegions, unshare);
