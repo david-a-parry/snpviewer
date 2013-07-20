@@ -1577,7 +1577,6 @@ public class SnpViewer extends Application implements Initializable, Serializabl
          * listener refire this method
          */
             if (chromosomeSelector.getSelectionModel().isEmpty()){
-                chromosomeSelector.getSelectionModel().clearSelection();
                 chromosomeSelector.getSelectionModel().selectFirst();
             }else{
                    int sel = chromosomeSelector.getSelectionModel().getSelectedIndex();
@@ -2235,6 +2234,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         loadProjectMenu.setDisable(false);
         addAffected.setDisable(false);
         addUnaffected.setDisable(false);
+        addAffSampleMenu.setDisable(false);
+        addUnSampleMenu.setDisable(false);
         loadProjectButton.setDisable(false);
         newProjectButton.setDisable(false);
         saveToPngMenu.setDisable(true);
@@ -2245,8 +2246,6 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         cacheChromsButton.setDisable(true);
         
         cacheChromsMenu.setDisable(true);
-        addAffSampleMenu.setDisable(true);
-        addUnSampleMenu.setDisable(true);
         nextChromMenu.setDisable(true);
         prevChromMenu.setDisable(true);
         firstChromMenu.setDisable(true);
@@ -2776,6 +2775,9 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                         chromosomeSelector.setDisable(false);
                     }
                     //setProgressMode(false);
+                    if (affObserve.isEmpty() && unObserve.isEmpty()){
+                        resetView();
+                    }
                     projectRunning = true; 
 
                 }catch(IOException | ClassNotFoundException ex){
@@ -2808,9 +2810,9 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 Dialogs.showErrorDialog(null, "Could not load project file - IO error",
                         "Load Failed", "SNP View", ex);
             }
-        }
-        
+        }       
     }
+    
     private void resetObservables(){
         affObserve.clear();
         unObserve.clear();
