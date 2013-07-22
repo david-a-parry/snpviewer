@@ -64,10 +64,6 @@
 .check-box *.box{
     -fx-background-color: white
 }
-.check-box *.mark{
-}
-
-
 
 .list-view{
     -fx-background-color:
@@ -127,7 +123,9 @@
 #choice-box-menu-item:hover {
 }
 
-
+.check-menu-item:checked *.check{
+    -fx-background-color: white;
+}
 .radio-menu-item:checked *.radio{
     -fx-background-color: white;
 }

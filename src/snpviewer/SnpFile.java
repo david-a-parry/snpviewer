@@ -330,7 +330,7 @@ public class SnpFile extends Service<SnpFile> implements Serializable {
                     writer.close();
                     addCommentFile(commentFile);
 
-                }catch(Exception ex){
+                }catch(IOException | SnpFileException ex){
                     //display error here?
 //                    ex.printStackTrace();
                     throw new SnpFileException();
@@ -404,6 +404,7 @@ public class SnpFile extends Service<SnpFile> implements Serializable {
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(SnpFile.class.getName()).log(Level.SEVERE, null, ex);
             }
+            is.close();
         }catch (IOException ex) {
             Logger.getLogger(SnpFile.class.getName()).log(Level.SEVERE, null, ex);
         }
