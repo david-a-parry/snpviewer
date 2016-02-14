@@ -1,21 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="172.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="snpviewer.FindRegionsInterfaceController">
+<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="196.0" prefWidth="615.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="snpviewer.FindRegionsInterfaceController">
   <children>
     <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <tabs>
         <Tab text="Settings">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="174.0" prefWidth="586.0">
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="163.0" prefWidth="603.0">
               <children>
-                <TextField id="lengthField" fx:id="regionLengthField" prefWidth="55.0" style="-fx-text-fill: white;&#10;-fx-background-color: black;&#10;-fx-border-color:white" text="1.0" AnchorPane.leftAnchor="365.0" AnchorPane.rightAnchor="180.0" AnchorPane.topAnchor="20.0" />
-                <Label prefWidth="332.0" text="Minimum Region Size Per Sample (Mb)" textAlignment="RIGHT" wrapText="false" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="254.0" AnchorPane.topAnchor="23.0" />
+                        <VBox layoutX="14.0" layoutY="20.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="20.0" spacing="5.0" AnchorPane.leftAnchor="14.0">
+                                 <children>
+                            <Label prefWidth="332.0" text="Minimum Region Size Per Sample (Mb)" textAlignment="RIGHT" wrapText="false" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="254.0" AnchorPane.topAnchor="23.0" />
+                            <TextField id="lengthField" fx:id="regionLengthField" prefWidth="55.0" text="1.0" AnchorPane.leftAnchor="365.0" AnchorPane.rightAnchor="180.0" AnchorPane.topAnchor="20.0" />
+                                 </children>
+                                 <padding>
+                                    <Insets top="5.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="49.0" spacing="5.0" AnchorPane.leftAnchor="14.0">
+                                 <children>
+                            <Label prefWidth="332.0" text="Only Report Regions Longer Than... (bp)" textAlignment="RIGHT" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="254.0" AnchorPane.topAnchor="52.0" />
+                            <TextField fx:id="reportLengthField" prefWidth="128.0" text="10000" AnchorPane.leftAnchor="365.0" AnchorPane.rightAnchor="107.0" AnchorPane.topAnchor="49.0" />
+                                 </children>
+                                 <padding>
+                                    <Insets top="5.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="80.0" spacing="5.0" AnchorPane.leftAnchor="14.0">
+                                 <children>
+                            <Label prefHeight="19.0" prefWidth="333.0" text="Only Report Regions With At Least This Many SNPs" textAlignment="RIGHT" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="254.0" AnchorPane.topAnchor="83.0" />
+                            <TextField fx:id="reportMinSnpsField" prefWidth="128.0" text="25" AnchorPane.leftAnchor="365.0" AnchorPane.rightAnchor="107.0" AnchorPane.topAnchor="80.0" />
+                                 </children>
+                                 <padding>
+                                    <Insets top="5.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                        </VBox>
                 <HBox id="HBox" alignment="CENTER_LEFT" prefWidth="572.0" spacing="5.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
                   <children>
                     <CheckBox fx:id="concordantCheckBox" mnemonicParsing="false" selected="true" text="Concordant regions only?" />
@@ -24,10 +54,6 @@
                     <Button fx:id="okButton" defaultButton="true" mnemonicParsing="false" text="OK" />
                   </children>
                 </HBox>
-                <Label prefWidth="332.0" text="Only Report Regions Longer Than... (bp)" textAlignment="RIGHT" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="254.0" AnchorPane.topAnchor="52.0" />
-                <TextField fx:id="reportLengthField" prefWidth="128.0" style="-fx-text-fill: white;&#10;-fx-background-color: black;&#10;-fx-border-color:white" text="10000" AnchorPane.leftAnchor="365.0" AnchorPane.rightAnchor="107.0" AnchorPane.topAnchor="49.0" />
-                <Label text="Only Report Regions With At Least This Many SNPs" textAlignment="RIGHT" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="254.0" AnchorPane.topAnchor="83.0" />
-                <TextField fx:id="reportMinSnpsField" prefWidth="128.0" style="-fx-text-fill: white;&#10;-fx-background-color: black;&#10;-fx-border-color:white" text="25" AnchorPane.leftAnchor="365.0" AnchorPane.rightAnchor="107.0" AnchorPane.topAnchor="80.0" />
               </children>
             </AnchorPane>
           </content>
@@ -36,33 +62,45 @@
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
-                <VBox id="VBox" alignment="CENTER_RIGHT" spacing="15.0" AnchorPane.bottomAnchor="59.5" AnchorPane.rightAnchor="207.0" AnchorPane.topAnchor="39.5">
-                  <children>
-                    <Label text="Refine Window Size" />
-                    <Label text="Refine Het Tolerance" />
-                    <CheckBox id="autosomesOnly" fx:id="autosomesOnlyCheckbox" mnemonicParsing="false" selected="true" text="Autosomes Only" />
-                  </children>
-                </VBox>
-                <VBox id="VBox" alignment="CENTER" prefHeight="108.0" spacing="15.0" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="183.0" AnchorPane.topAnchor="15.0">
-                  <children>
-                    <TextField fx:id="windowSizeField" prefHeight="24.0" prefWidth="55.0" style="-fx-text-fill: white;&#10;-fx-background-color: black;&#10;-fx-border-color:white" text="100" />
-                    <TextField id="windowSizeField" fx:id="hetToleranceField" prefWidth="55.0" style="-fx-text-fill: white;&#10;-fx-background-color: black;&#10;-fx-border-color:white" text="0.05" />
-                    <TextField id="windowSizeField" fx:id="dischordToleranceField" prefHeight="24.0" prefWidth="55.0" style="-fx-text-fill: white;&#10;-fx-background-color: black;&#10;-fx-border-color:white" text="0.01" />
-                  </children>
-                </VBox>
-                <VBox id="VBox" alignment="CENTER_RIGHT" minHeight="76.0" prefHeight="108.0" spacing="15.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="14.0">
-                  <children>
-                    <Label prefHeight="22.0" text="Window Size (no. SNPs)" />
-                    <Label prefHeight="17.000099999997474" text="Heterozygous Tolerance" />
-                    <Label prefHeight="24.0" text="Dischordant Tolerance" />
-                  </children>
-                </VBox>
-                <VBox id="VBox" alignment="TOP_CENTER" prefHeight="63.5" prefWidth="55.0" spacing="10.0" AnchorPane.bottomAnchor="58.5" AnchorPane.rightAnchor="145.0" AnchorPane.topAnchor="14.0">
-                  <children>
-                    <TextField fx:id="refineSizeField" prefWidth="55.0" style="-fx-text-fill: white;&#10;-fx-background-color: black;&#10;-fx-border-color:white" text="10" />
-                    <TextField fx:id="refineToleranceField" prefWidth="128.0" style="-fx-text-fill: white;&#10;-fx-background-color: black;&#10;-fx-border-color:white" text="0.1" />
-                  </children>
-                </VBox>
+                        <VBox layoutX="15.0" layoutY="14.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" layoutX="22.0" layoutY="14.0" spacing="10.0" AnchorPane.leftAnchor="15.0">
+                                 <children>
+                          <Label layoutX="22.0" layoutY="34.0" prefHeight="22.0" prefWidth="158.0" text="Window Size (no. SNPs):" />
+                          <TextField fx:id="windowSizeField" layoutX="183.0" layoutY="24.0" prefHeight="24.0" prefWidth="55.0" text="100" />
+                                    <Separator focusTraversable="false" prefHeight="2.0" prefWidth="0.0" visible="false" />
+                          <Label layoutX="289.0" layoutY="28.5" prefHeight="19.0" prefWidth="129.0" text="Refine Window Size:" />
+                          <TextField fx:id="refineSizeField" layoutX="415.0" layoutY="14.0" prefWidth="55.0" text="10" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox layoutX="15.0" layoutY="53.0" spacing="10.0" AnchorPane.leftAnchor="15.0">
+                                 <children>
+                          <Label layoutX="15.0" layoutY="71.0" prefHeight="19.0" prefWidth="157.0" text="Heterozygous Tolerance:" />
+                          <TextField id="windowSizeField" fx:id="hetToleranceField" layoutX="183.0" layoutY="68.0" prefWidth="55.0" text="0.05" />
+                                    <Separator prefHeight="4.0" prefWidth="5.0" visible="false" />
+                          <Label layoutX="280.0" layoutY="62.5" text="Refine Het Tolerance:" />
+                          <TextField fx:id="refineToleranceField" layoutX="415.0" layoutY="53.0" prefWidth="128.0" text="0.1" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox layoutX="25.0" layoutY="96.5" spacing="10.0" AnchorPane.leftAnchor="15.0">
+                                 <children>
+                          <Label layoutX="25.0" layoutY="105.0" prefHeight="24.0" prefWidth="157.0" text="Dischordant Tolerance:" />
+                          <TextField id="windowSizeField" fx:id="dischordToleranceField" layoutX="183.0" layoutY="112.0" prefHeight="24.0" prefWidth="55.0" text="0.01" />
+                                    <Separator prefHeight="4.0" prefWidth="5.0" visible="false" />
+                          <CheckBox id="autosomesOnly" fx:id="autosomesOnlyCheckbox" layoutX="283.0" layoutY="96.5" mnemonicParsing="false" selected="true" text="Autosomes Only" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                        </VBox>
               </children>
             </AnchorPane>
           </content>
