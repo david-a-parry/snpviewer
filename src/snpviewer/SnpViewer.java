@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import static java.lang.System.getProperty;
 import java.net.URL;
 import java.nio.file.Files;
 import java.text.NumberFormat;
@@ -77,7 +78,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Window;
-import javafx.scene.control.Dialogs;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -92,12 +92,12 @@ import static java.nio.file.StandardCopyOption.*;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Dialogs.DialogResponse;
 import javafx.scene.control.Menu;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ScrollPane;
@@ -122,6 +122,9 @@ import org.apache.poi.ss.usermodel.SheetConditionalFormatting;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 
 
 /**
@@ -151,6 +154,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     boolean progressMode = false; //becomes true when in progressMode
     File snpViewSaveDirectory;// directory for program files
     File projectFile;
+    File lastLoadedDir = new File(getProperty("user.home")); 
+//directory of last loaded snp data (or home dir if none loaded)
     
     //regions found automatically and/or manually saved
     ArrayList<RegionSummary> savedRegions = new ArrayList<>();
@@ -240,13 +245,15 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     @FXML
     RadioMenuItem noFilteringRadio;
     @FXML
+    RadioMenuItem filter99pt9;
+    @FXML
+    RadioMenuItem filter99pt5;
+    @FXML
     RadioMenuItem filter99;
     @FXML
     RadioMenuItem filter95;
     @FXML
     RadioMenuItem filter90;
-    @FXML
-    RadioMenuItem filter85;
     
     //buttons etc.
     @FXML
@@ -335,7 +342,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             Scene scene = new Scene(page);
             primaryStage.setScene(scene);
             primaryStage.setTitle("SNP Viewer");
-            scene.getStylesheets().add(SnpViewer.class.getResource("SnpViewerStyleSheet.css").toExternalForm());
+            //scene.getStylesheets().add(SnpViewer.class.getResource("SnpViewerStyleSheet.css").toExternalForm());
             primaryStage.show();
             primaryStage.getIcons().add(new Image(this.getClass().
                     getResourceAsStream("icon.png")));
@@ -395,7 +402,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         removeSampleMenu.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         //set radio menu item toggle group
         ArrayList<RadioMenuItem> callQualityRadios = new ArrayList<>(Arrays.asList(
-            noFilteringRadio, filter99, filter95, filter90, filter85)); 
+            noFilteringRadio, filter99pt9, filter99pt5, filter99, filter95, filter90)); 
         ToggleGroup callQualityToggle = new ToggleGroup();
         for (RadioMenuItem r: callQualityRadios){
             r.setToggleGroup(callQualityToggle);
@@ -404,6 +411,20 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             @Override
             public void handle(Event ev){
                 setQualityFilter(null);
+            }
+        });
+        
+        filter99pt9.setOnAction(new EventHandler(){
+            @Override
+            public void handle(Event ev){
+                setQualityFilter(0.001);
+            }
+        });
+        
+        filter99pt5.setOnAction(new EventHandler(){
+            @Override
+            public void handle(Event ev){
+                setQualityFilter(0.005);
             }
         });
         
@@ -425,13 +446,6 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             @Override
             public void handle(Event ev){
                 setQualityFilter(0.10);
-            }
-        });
-        
-        filter85.setOnAction(new EventHandler(){
-            @Override
-            public void handle(Event ev){
-                setQualityFilter(0.15);
             }
         });
         
@@ -947,13 +961,17 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             for (String s: noQualityField){
                 noQual.append(s).append("\n");
             }
-            Dialogs.showWarningDialog(null, "The following input file(s) do not "
+            Alert warning = new Alert(AlertType.WARNING);
+            warning.setTitle("SnpViewer");
+            warning.setContentText("The following input file(s) do not "
                     + "have call confidence information:\n\n" + noQual.toString()
                     + "\nChanging call quality filters will have no effect on these"
                     + " files.  To get quality fields ensure you include them "
                     + "when producing birdseed files with the Affymetrix Genotyping"
-                    + " Console software.", "File(s) without call confidences", 
-                    "SnpViewer");
+                    + " Console software.");
+            warning.setHeaderText("File(s) without call confidences");
+            warning.setResizable(true);
+            warning.showAndWait();
         }
         setQualityLabel();
         saveProject();
@@ -962,7 +980,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     
     private void setQualityLabel(){
         if (qualityFilter != null){
-            Integer percent = 100 - (int) (100 * qualityFilter);
+            Double percent = 100 - (100 * qualityFilter);
             qualityLabel.setText(percent.toString() + " % confidence or greater");
         }else{
             qualityLabel.setText("None");
@@ -989,6 +1007,12 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     
     public void saveColours(ActionEvent e){
         FileChooser fileChooser = new FileChooser();
+        if (projectFile != null){
+            fileChooser.setInitialDirectory(projectFile.getParentFile());
+        }else{
+            fileChooser.setInitialDirectory(new File(getProperty("user.home")));
+        }
+        fileChooser.setInitialDirectory(new File(getProperty("user.home")));
         fileChooser.setTitle("Save Colour Scheme (.svcols) As...");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("SNP Viewer Colour Scheme", "*.svcols");
         fileChooser.getExtensionFilters().add(extFilter);
@@ -1008,14 +1032,25 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     projectLabel.setText("Project: " +projectFile.getName());
                 }
             }catch (IOException ex){
-                Dialogs.showErrorDialog(null, "Could not save colour scheme - IO error",
-                            "Save Failed", "SNP Viewer", ex);
+                Alert error = new Alert(AlertType.ERROR);
+                error.getDialogPane().setPrefSize(420, 200);
+                error.setResizable(true);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Could not save colour scheme");
+                error.setContentText(ex.getLocalizedMessage());
+                ex.printStackTrace();
+                error.showAndWait();
             }
         }
     }
     
     public void loadColourScheme(ActionEvent e){
         FileChooser fileChooser = new FileChooser();
+        if (projectFile != null){
+            fileChooser.setInitialDirectory(projectFile.getParentFile());
+        }else{
+            fileChooser.setInitialDirectory(new File(getProperty("user.home")));
+        }
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("SNP Viewer Colour Scheme", "*.svcols"));
         fileChooser.setTitle("Open SNP Viewer Colour Scheme (.svcols) file");
         File loadFile = fileChooser.showOpenDialog(mainWindow);
@@ -1068,8 +1103,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
            stage.setScene(scene);
            stage.setTitle("chr" + currentChrom + ":" + nf.format(startCoordinate) 
                    + "-" + nf.format(startCoordinate + selectionWidth) );
-           scene.getStylesheets().add(SnpViewer.class
-                        .getResource("SnpViewerStyleSheet.css").toExternalForm());
+           //scene.getStylesheets().add(SnpViewer.class
+           //             .getResource("SnpViewerStyleSheet.css").toExternalForm());
            String subPath = "zoom"; 
            stage.initModality(Modality.NONE);
            stage.getIcons().add(new Image(this.getClass().
@@ -1099,8 +1134,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
            zoomController.tidyPanes();
            
         }catch(ChromosomeLength.ChromosomeLengthException | IOException ex){
-            Dialogs.showErrorDialog(null, "Please see details for stack trace.", 
-                    "Error displaying zoomed region", "SnpViewer", ex);
+            Alert error = new Alert(AlertType.ERROR);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("Error displaying zoomed region");
+            error.setContentText(ex.getMessage());
+            error.showAndWait();
         }
     }
     
@@ -1144,9 +1182,13 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     if (pngFile.exists()){
                         boolean deleted = pngFile.delete();
                         if (! deleted){
-                            Dialogs.showErrorDialog(null, "Unable to delete old chromosome "
+                            Alert error = new Alert(AlertType.ERROR);
+                            error.setTitle("SnpViewer");
+                            error.setHeaderText("Error deleting old chromosome images");
+                            error.setContentText("Unable to delete old chromosome "
                                     + "image " + pngFile.getPath() +". Please check"
-                                    + " permissions.", "Error deleting old chromosome images", "SnpViewer");
+                                    + " permissions.");
+                            error.showAndWait();
                             return;
                         }
                     }
@@ -1179,8 +1221,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 Scene tableScene = new Scene(tablePane);
                 Stage tableStage = new Stage();
                 tableStage.setScene(tableScene);
-                tableScene.getStylesheets().add(SnpViewer.class
-                        .getResource("SnpViewerStyleSheet.css").toExternalForm());
+                //tableScene.getStylesheets().add(SnpViewer.class
+                //        .getResource("SnpViewerStyleSheet.css").toExternalForm());
                 tableStage.getIcons().add(new Image(this.getClass().
                        getResourceAsStream("icon.png")));
                 multiReg.displayData(savedRegions);
@@ -1189,14 +1231,23 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 
                 tableStage.show();
            }catch (Exception ex){
-               Dialogs.showErrorDialog(null, "Error displaying"
-                       + " Saved Regions - see Details for stack trace.",
-                       "Saved Regions Display Error!", "SnpViewer", ex);
+                Alert error = new Alert(AlertType.ERROR);
+                error.getDialogPane().setPrefSize(420, 200);
+                error.setResizable(true);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Error displaying Saved Regions - "
+                        + "see Details for stack trace.");
+                error.setContentText(ex.getLocalizedMessage());
+                ex.printStackTrace();
+                error.showAndWait();
            }
        }else{
-           Dialogs.showInformationDialog(null, "No regions "
-                   + "found.", "Saved Regions", "SnpViewer");
-       }
+            Alert error = new Alert(AlertType.WARNING);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("No regions Found");
+            error.setContentText("No regions found matching parameters.");
+            error.showAndWait();
+        }
     }
     
     private void clearSavedRegions(){
@@ -1358,8 +1409,12 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             drawSavedRegions((String) chromosomeBoxList[chromosomeSelector
                     .getSelectionModel().getSelectedIndex()]);
         }else{
-            Dialogs.showErrorDialog(null, "Can't find item for removal! Please "
-                    + "report this error.", "ERROR", "SnpViewer");
+            Alert error = new Alert(AlertType.ERROR);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("ERROR");
+            error.setContentText("Can't find item for removal! Please "
+                + "report this error.");
+            error.showAndWait();
         }
     }
     
@@ -1407,11 +1462,18 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     }
     
     public void cacheChromsFired(){
-        DialogResponse response  = Dialogs.showConfirmDialog(null, "Caching chromsome"
-                + " images can take a long time. Once finished you will have quick "
-                + "access to each chromosome image.\n\nClick 'OK' to continue.", 
-                "Continue caching chromosome images?", "SNP Viewer", Dialogs.DialogOptions.OK_CANCEL);
-        if (response != DialogResponse.OK){
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.getDialogPane().setPrefSize(420, 200);
+        ButtonType cButton = ButtonType.CANCEL;
+        ButtonType okButton = ButtonType.OK;
+        alert.getButtonTypes().setAll(okButton, cButton);
+        alert.setTitle("SnpViewer");
+        alert.setHeaderText("Continue caching chromosome images?");
+        alert.setContentText("Caching chromsome images can take a long time. "
+                + "Once finished you will have quick access to each chromosome "
+                + "image.\n\nClick 'OK' to continue.");
+        Optional<ButtonType> response = alert.showAndWait();
+        if (response.get() != okButton){
             return;
         }
         List chroms = chromosomeSelector.getItems();
@@ -1611,7 +1673,6 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             panesToAdd.add(sPane);
             ScrollPane labelPane = new ScrollPane();
             Label fileLabel = new Label(f.inputFile.getName() + "\n(Affected)");
-            fileLabel.setTextFill(Color.WHITE);
             labelPane.setMinHeight(labelSplitPane.getHeight()/totalFiles);
             labelPane.setPrefWidth(labelSplitPane.getWidth());
             labelPane.minHeightProperty().bind(labelSplitPane.heightProperty().divide(totalFiles));
@@ -1619,8 +1680,6 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             vbox.setSpacing(10);
             vbox.getChildren().add(fileLabel);
             final TextField textField = new TextField();
-            textField.setStyle("-fx-text-fill: white; -fx-background-color: "
-                    + "rgba(90%,90%,90%,0.3); -fx-border-color:white");
             textField.setPromptText("Sample Name");
             if (f.getSampleName() != null){
                 textField.setText(f.getSampleName());
@@ -1685,7 +1744,6 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             panesToAdd.add(sPane);
             ScrollPane labelPane = new ScrollPane();
             Label fileLabel = new Label(f.inputFile.getName() + "\n(Unaffected)");
-            fileLabel.setStyle("-fx-text-fill: black");
             labelPane.setMinHeight(labelSplitPane.getHeight()/totalFiles);
             labelPane.setPrefWidth(labelSplitPane.getWidth());
             labelPane.minHeightProperty().bind(labelSplitPane.heightProperty().divide(totalFiles));
@@ -1693,9 +1751,6 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             vbox.setSpacing(10);
             vbox.getChildren().add(fileLabel);
             final TextField textField = new TextField();
-            textField.setStyle("-fx-text-fill: black; "
-                    + "-fx-background-color: rgba(90%,90%,90%,0.3);" 
-                    + " -fx-border-color:white");
             textField.setPromptText("Sample Name");
             if (f.getSampleName() != null){
                 textField.setText(f.getSampleName());
@@ -1835,8 +1890,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     stage.setResizable(true);
                 }
             }catch (IOException ex){
-                Dialogs.showErrorDialog(null, "IO error reading cached image", 
-                        "Error displaying chromosome image", "SnpViewer", ex);
+                Alert error = new Alert(AlertType.ERROR);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Error displaying chromosome image");
+                error.setContentText("IO error reading cached image");
+                error.showAndWait();
                 return;
             }
             
@@ -1968,8 +2026,12 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         try{
             image = pane.snapshot(null, null);
         }catch(IllegalStateException ex){
-            Dialogs.showErrorDialog(null, "Error while attempting to convert"
-                    + " view to image file","PNG conversion failed", "SNP Viewer", ex);
+            Alert error = new Alert(AlertType.ERROR);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("PNG conversion failed");
+            error.setContentText("Error while attempting to convert"
+                    + " view to image file");
+            error.showAndWait();
             return;
         }
 
@@ -1987,10 +2049,13 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     if (!pngFile.getParentFile().exists()){
                         boolean madeDir = pngFile.getParentFile().mkdir();
                         if (madeDir == false){
-                            Dialogs.showErrorDialog(null, "Unable to make sub directory"
+                            Alert error = new Alert(AlertType.ERROR);
+                            error.setTitle("SnpViewer");
+                            error.setHeaderText("PNG conversion failed");
+                            error.setContentText("Unable to make sub directory"
                             + " when converting dynamic view to image file. Please "
-                                    + "check permissions.",
-                            "PNG conversion failed", "SNP Viewer");
+                                    + "check permissions.");
+                            error.showAndWait();
                             return;
                         }
                     }
@@ -2019,17 +2084,24 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     chromImage.fitWidthProperty().bind(pane.widthProperty());
                     chromImage.fitHeightProperty().bind(pane.heightProperty());
                }catch (IOException ex){
-                    Dialogs.showErrorDialog(null, "IOException while attempting to convert"
-                            + " dynamic view to image file","PNG conversion failed", "SNP Viewer", ex);
+                    Alert error = new Alert(AlertType.ERROR);
+                    error.setTitle("SnpViewer");
+                    error.setHeaderText("PNG conversion failed");
+                    error.setContentText("IOException while attempting to convert"
+                            + " dynamic view to image file");
+                    error.showAndWait();
                }
             }
         });
         drawToPng.setOnFailed(new EventHandler<WorkerStateEvent>(){
             @Override
             public void handle(WorkerStateEvent t){
-                Dialogs.showErrorDialog(null, "Error attempting to convert"
-                        + " dynamic view to image file","PNG conversion failed", "SNP Viewer");
-                
+                Alert error = new Alert(AlertType.ERROR);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("PNG conversion failed");
+                error.setContentText("Error encountered while attempting to convert"
+                        + " dynamic view to image file");
+                error.showAndWait();
             }
         });
         drawToPng.start();
@@ -2040,6 +2112,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             return;
         }
         FileChooser fileChooser = new FileChooser();
+        if (projectFile != null){
+            fileChooser.setInitialDirectory(projectFile.getParentFile());
+        }else{
+            fileChooser.setInitialDirectory(new File(getProperty("user.home")));
+        }
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
                 "PNG Image Files (*.png)", "*.png");
         fileChooser.getExtensionFilters().add(extFilter);
@@ -2052,18 +2129,30 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         }
         WritableImage image = chromSplitPane.snapshot(null, null);
         if (image == null){
-            Dialogs.showErrorDialog(null, "Error attempting to convert"
-                    + " dynamic view to image file","PNG conversion failed", "SNP Viewer");
+            Alert error = new Alert(AlertType.ERROR);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("PNG conversion failed");
+            error.setContentText("Error encountered while attempting to convert"
+                    + " dynamic view to image file");
+            error.showAndWait();
             return;
         }
         try{
             ImageIO.write(SwingFXUtils.fromFXImage(image, null),
                     "png", pngFile);
-            Dialogs.showInformationDialog(null, "Sucessfully saved current view "
-                    + "to " + pngFile.getName(), "Image Saved", "SNP Viewer");
+            Alert info = new Alert(AlertType.INFORMATION);
+            info.setTitle("SnpViewer");
+            info.setHeaderText("Image Saved");
+            info.setContentText("Sucessfully saved current view "
+                    + "to " + pngFile.getName());
+            info.showAndWait();
         } catch (IOException ex) {
-            Dialogs.showErrorDialog(null, "Error attempting to convert"
-                    + " dynamic view to image file","PNG conversion failed", "SNP Viewer", ex);
+            Alert error = new Alert(AlertType.ERROR);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("PNG conversion failed");
+            error.setContentText("Error encountered while attempting to convert"
+                    + " dynamic view to image file");
+            error.showAndWait();
         }
     }
     
@@ -2071,10 +2160,16 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         newProjectButton.setDisable(true);
         loadProjectButton.setDisable(true);
         if (projectRunning){
-            DialogResponse response = Dialogs.showConfirmDialog(null,
-            "Your current project will be closed. Its data will be saved.", 
-            "Close Current Project?", "SNP Viewer", Dialogs.DialogOptions.YES_NO);
-            if (!DialogResponse.YES.equals(response)){
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            ButtonType yButton = ButtonType.YES;
+            ButtonType nButton = ButtonType.NO;
+            alert.getButtonTypes().setAll(yButton, nButton);
+            alert.setTitle("SnpViewer");
+            alert.setHeaderText("Close Current Project?");
+            alert.setContentText("Your current project will be closed. "
+                    + "Its data will be saved.");
+            Optional<ButtonType> response = alert.showAndWait();
+            if (response.get() != yButton){
                 newProjectButton.setDisable(false);
                 loadProjectButton.setDisable(false);
                 return;
@@ -2085,14 +2180,19 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         loadProjectButton.setDisable(false);
         if (success){
             projectRunning = true;
-            Dialogs.showInformationDialog(null, "Your project will automatically"
-                    + " save itself as you make changes.", 
-                    "Project " + projectFile.getName() + " Created", "SNP Viewer");
+            Alert info = new Alert (AlertType.INFORMATION);
+            info.setTitle("SnpViewer");
+            info.setHeaderText("Project " + projectFile.getName() + " Created");
+            info.setContentText("Your project will automatically"
+                    + " save itself as you make changes.");
             setProgressMode(false);
         }else{
             projectLabel.setText("Project: none");
-            Dialogs.showErrorDialog(null, "Could not create new project",
-                "Project Creation Failed", "SNP Viewer");
+            Alert error = new Alert(AlertType.ERROR);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("Project Creation Failed");
+            error.setContentText( "Could not create new project");
+            error.showAndWait();
             projectRunning = false;
         }
        
@@ -2128,6 +2228,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             setProgressMode(true);
         }
         FileChooser fileChooser = new FileChooser();
+        if (projectFile != null){
+            fileChooser.setInitialDirectory(projectFile.getParentFile());
+        }else{
+            fileChooser.setInitialDirectory(new File(getProperty("user.home")));
+        }
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("SNP Viewer Projects (*.svproj)", "*.svproj");
         fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setTitle("Save New SNP Viewer (.svproj) Project As...");
@@ -2151,8 +2256,15 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     return false;
                 }   
            } catch(Exception ex){
-               Dialogs.showErrorDialog(null, "Project Directory Creation Failed", 
-                       "Error Creating New Project", "Snp Viewer", ex);
+               Alert error = new Alert(AlertType.ERROR);
+               error.getDialogPane().setPrefSize(420, 200);
+               error.setResizable(true);
+               error.setTitle("SnpViewer");
+               error.setContentText("Project Directory Creation Failed " + 
+                       ex.getLocalizedMessage());
+               error.setHeaderText("Error Creating New Project");
+               ex.printStackTrace();
+               error.showAndWait();
            }
            return saveProject(projectFile);
         }else{
@@ -2175,8 +2287,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     public void saveButtonFired (ActionEvent event){
        boolean success = saveProject();
        if (success){
-           Dialogs.showInformationDialog(null, projectFile.getName() + " saved sucessfully", 
-                            "Save Successful", "SNP Viewer");
+           Alert info = new Alert(AlertType.INFORMATION);
+           info.setTitle("SnpViewer");
+           info.setHeaderText("Save Successful");
+           info.setContentText(projectFile.getName() + " saved sucessfully");
+           info.showAndWait();
         }
    }
     
@@ -2207,8 +2322,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             Scene scene = new Scene(pane);
             Stage stage = new Stage();
             stage.setScene(scene);
-            scene.getStylesheets().add(SnpViewer.class
-.getResource("SnpViewerStyleSheet.css").toExternalForm());
+            //scene.getStylesheets().add(SnpViewer.class
+//.getResource("SnpViewerStyleSheet.css").toExternalForm());
             stage.getIcons().add(new Image(this.getClass().
                     getResourceAsStream("icon.png")));
             stage.setTitle("Remove Samples");
@@ -2255,8 +2370,14 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 FileUtils.deleteDirectory(dir);                    
             }
        }catch(Exception ex){
-           Dialogs.showErrorDialog(null, "Sample removal failed - please see "
-                   + "details for stack trace and report this error.", "Remove Samples Failed!", "SnpViewer", ex);
+            Alert error = new Alert(AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("Remove Samples Failed!");
+            error.setContentText(ex.getLocalizedMessage());
+            ex.printStackTrace();
+            error.showAndWait();
        }
     }
     
@@ -2292,89 +2413,100 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         findRegionsButton.setDisable(true);
         removeSampleMenu.setDisable(true);
         noFilteringRadio.setDisable(true);
+        filter99pt9.setDisable(true);
+        filter99pt5.setDisable(true);
         filter99.setDisable(true);
         filter95.setDisable(true);
         filter90.setDisable(true);
-        filter85.setDisable(true);
         cancelButton.setDisable(true);
     }
     
     public void addInputFiles (final boolean isAffected){
         setProgressMode(true);
         FileChooser fileChooser = new FileChooser();
-           fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt", "AutoSNPa Files", "*.xls"));
-           fileChooser.setTitle("Select one or more input (birdseed) files");
-           List<File> chosen = fileChooser.showOpenMultipleDialog(null);
-           if (chosen == null){
+        fileChooser.setInitialDirectory(lastLoadedDir);
+       fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt", "AutoSNPa Files", "*.xls"));
+       fileChooser.setTitle("Select one or more input (birdseed) files");
+       List<File> chosen = fileChooser.showOpenMultipleDialog(null);
+       if (chosen == null){
+           setProgressMode(false);
+           return ;
+       }
+       cancelButton.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent actionEvent){
+                setProgressMode(false);
+           };
+       });
+       ArrayList<File> inputFiles = new ArrayList<>();
+       inputFiles.addAll(chosen);
+       ArrayList<File> duplicates =  new ArrayList<>();
+       ArrayList<Integer> indicesToRemove =  new ArrayList<>();
+       for (int i = 0; i < inputFiles.size(); i++){
+           for (SnpFile s: affFiles){
+               if (inputFiles.get(i).getName().equals(s.getInputFileName())){
+                   duplicates.add(inputFiles.get(i));
+                   indicesToRemove.add(i);
+               }
+           }
+           for (SnpFile s: unFiles){
+               if (inputFiles.get(i).getName().equals(s.getInputFileName())){
+                   duplicates.add(inputFiles.get(i));
+                   indicesToRemove.add(i);
+               }
+           }
+       }
+       if (!duplicates.isEmpty()){
+           StringBuilder duplicateString = new StringBuilder();
+           for (File d: duplicates){
+               duplicateString.append(d.getName()).append("\n");
+           }
+           Collections.sort(indicesToRemove, Collections.reverseOrder());
+           for (int i: indicesToRemove){
+               inputFiles.remove(i);
+           }
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            ButtonType okButton = ButtonType.OK;
+            ButtonType cButton = ButtonType.CANCEL;
+            alert.getButtonTypes().setAll(okButton, cButton);
+            alert.setTitle("SnpViewer");
+            alert.setHeaderText("Duplicate Input File");
+            alert.setContentText("This project already includes the following file(s) with "
+                   + "matching names to the file(s) you have just tried to add:"
+                   + "\n\n" + duplicateString + "\nIf you want to change the affected "
+                   + "status of a file please remove it first.  Any remaining "
+                   + "(non-duplicate) files will be processed if you click 'OK'.");
+            Optional<ButtonType> response = alert.showAndWait();
+            if (response.get() != okButton){
                setProgressMode(false);
-               return ;
-           }
-           cancelButton.setOnAction(new EventHandler<ActionEvent>(){
-               @Override
-               public void handle(ActionEvent actionEvent){
-                    setProgressMode(false);
-               };
-           });
-           ArrayList<File> inputFiles = new ArrayList<>();
-           inputFiles.addAll(chosen);
-           ArrayList<File> duplicates =  new ArrayList<>();
-           ArrayList<Integer> indicesToRemove =  new ArrayList<>();
-           for (int i = 0; i < inputFiles.size(); i++){
-               for (SnpFile s: affFiles){
-                   if (inputFiles.get(i).getName().equals(s.getInputFileName())){
-                       duplicates.add(inputFiles.get(i));
-                       indicesToRemove.add(i);
-                   }
-               }
-               for (SnpFile s: unFiles){
-                   if (inputFiles.get(i).getName().equals(s.getInputFileName())){
-                       duplicates.add(inputFiles.get(i));
-                       indicesToRemove.add(i);
-                   }
-               }
-           }
-           if (!duplicates.isEmpty()){
-               StringBuilder duplicateString = new StringBuilder();
-               for (File d: duplicates){
-                   duplicateString.append(d.getName()).append("\n");
-               }
-               Collections.sort(indicesToRemove, Collections.reverseOrder());
-               for (int i: indicesToRemove){
-                   inputFiles.remove(i);
-               }
-               DialogResponse response = Dialogs.showWarningDialog(null, 
-                       "This project already includes the following file(s) with "
-                       + "matching names to the file(s) you have just tried to add:"
-                       + "\n\n" + duplicateString + "\nIf you want to change the affected "
-                       + "status of a file please remove it first.  Any remaining "
-                       + "(non-duplicate) files will be processed if you click 'OK'.", 
-                       "Duplicate Input File", "SnpViewer", Dialogs.DialogOptions.OK_CANCEL);
-               if (! response.equals(DialogResponse.OK)){
-                   setProgressMode(false);
-                   return;
-               }
-           }
-           if (inputFiles.isEmpty()){
-               setProgressMode(false);
-               return ;
-           }
-           final Iterator iter = inputFiles.iterator();
-           File input = (File) iter.next();
-           int fileCounter = 1;
-           if (snpViewSaveDirectory == null){
-                 Dialogs.showWarningDialog(null, "Before processing input files "
-                         + "please create a project", 
-                         "Create Project", "SNP Viewer");
-                 
-               boolean success = startNewProject();
+               return;
+            }
+       }
+       if (inputFiles.isEmpty()){
+           setProgressMode(false);
+           return ;
+       }
+       final Iterator iter = inputFiles.iterator();
+       File input = (File) iter.next();
+       lastLoadedDir = input.getParentFile();
+       int fileCounter = 1;
+       if (snpViewSaveDirectory == null){
+           Alert warn = new Alert(AlertType.WARNING);
+           warn.setTitle("SnpViewer");
+           warn.setHeaderText("Create Project");
+           warn.setContentText("Before processing input files "
+                    + "please create a project");
+           warn.showAndWait();
 
-               if (!success){
-                    setProgressMode(false);
-                    return ;
-               }
+           boolean success = startNewProject();
+
+           if (!success){
+                setProgressMode(false);
+                return ;
            }
-           
-           addInputFilesWithIterator(isAffected, input, iter, fileCounter, inputFiles.size());
+       }
+
+       addInputFilesWithIterator(isAffected, input, iter, fileCounter, inputFiles.size());
     }
     
     private void addInputFilesWithIterator(final boolean isAffected, final File input, final Iterator it, final int fileCounter, final int totalFiles){
@@ -2415,14 +2547,17 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                         BuildInferrer buildInferrer = new BuildInferrer();
                         String build = buildInferrer.inferBuild(snpFile);
                         if (build == null){
-                            Dialogs.showErrorDialog(null, "Failed to process file " 
+                            Alert error = new Alert(AlertType.ERROR);
+                            error.setTitle("SnpViewer");
+                            error.setHeaderText("Failure while adding input file.");
+                            error.setContentText( "Failed to process file " 
                                     + input.getName() + ".  Could not determine "
                                     + "genome build. Only hg19 and hg18 builds "
                                     + "are supported and in the absence of a "
                                     + "header containing build information only "
                                     + "Affymetrix Genome-Wide Human SNP Array 5.0"
-                                    + " or 6.0 chips are supported.", 
-                                    "Failure while adding input file.", "SnpViewer");
+                                    + " or 6.0 chips are supported.");
+                            error.showAndWait();
                             setProgressMode(false);
                             saveProject();
                             return;
@@ -2442,10 +2577,13 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                         if (! snpFile.getBuildVersion().equalsIgnoreCase(genomeVersion)){
                             progressTitle.setText("");
                             progressMessage.setText("");
-                            Dialogs.showErrorDialog(null, "Genome versions do "
+                            Alert error = new Alert(AlertType.ERROR);
+                            error.setTitle("SnpViewer");
+                            error.setHeaderText("Genome Version Error");
+                            error.setContentText( "Genome versions do "
                                     + "not match between input files. Error while"
-                                    + " adding input file " + input.getName(),
-                                    "Genome Version Error", "SnpViewer");
+                                    + " adding input file " + input.getName());
+                            error.showAndWait();
                             setProgressMode(false);
                             saveProject();
                             return;
@@ -2475,8 +2613,15 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     progressTitle.setText("");
                     progressMessage.textProperty().unbind();
                    // progressMessage.setText("");
-                    Dialogs.showErrorDialog(null, "Failed to process file " + fileNameForFailure, 
-                            "Failure while adding input file.", "SnpViewer", t.getSource().getException());
+                    Alert error = new Alert(AlertType.ERROR);
+                    error.getDialogPane().setPrefSize(420, 200);
+                    error.setResizable(true);
+                    error.setTitle("SnpViewer");
+                    error.setHeaderText("Failed to process file " 
+                            + fileNameForFailure);
+                    error.setContentText(t.getSource().getException().getLocalizedMessage() ); 
+                    t.getSource().getException().printStackTrace();
+                    error.showAndWait();
                     setProgressMode(false);
                     saveProject();
                 }
@@ -2540,10 +2685,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             findRegionsButton.setDisable(false);
             removeSampleMenu.setDisable(false);
             noFilteringRadio.setDisable(false);
+            filter99pt9.setDisable(false);
+            filter99pt5.setDisable(false);
             filter99.setDisable(false);
             filter95.setDisable(false);
             filter90.setDisable(false);
-            filter85.setDisable(false);
             cancelButton.setDisable(true);
         }else{
             progressMode = true;
@@ -2576,10 +2722,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             findRegionsButton.setDisable(true);
             removeSampleMenu.setDisable(true);
             noFilteringRadio.setDisable(true);
+            filter99pt9.setDisable(true);
+            filter99pt5.setDisable(true);
             filter99.setDisable(true);
             filter95.setDisable(true);
             filter90.setDisable(true);
-            filter85.setDisable(true);
             cancelButton.setDisable(false);
         }
     } 
@@ -2639,6 +2786,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             return saveProject(projectFile);
         }else{
             FileChooser fileChooser = new FileChooser();
+            if (projectFile != null){
+                fileChooser.setInitialDirectory(projectFile.getParentFile());
+            }else{
+                fileChooser.setInitialDirectory(new File(getProperty("user.home")));
+            }
             fileChooser.setTitle("Save Snp Viewer Project (.svproj) As...");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("SNP Viewer Projects", "*.svproj");
             fileChooser.getExtensionFilters().add(extFilter);
@@ -2677,8 +2829,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             return true;
         }catch (IOException ex){
             //ex.printStackTrace();
-            Dialogs.showErrorDialog(null, "Could not save project file - IO error",
-                        "Save Failed", "SNP Viewer", ex);
+            Alert error = new Alert(AlertType.ERROR);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("Save Failed");
+            error.setContentText("Could not save project file - IO error" ); 
+            error.showAndWait();
             return false;
         }
     }
@@ -2706,6 +2861,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         loadProjectButton.setDisable(true);
         newProjectButton.setDisable(true);
         FileChooser fileChooser = new FileChooser();
+        if (projectFile != null){
+            fileChooser.setInitialDirectory(projectFile.getParentFile());
+        }else{
+            fileChooser.setInitialDirectory(new File(getProperty("user.home")));
+        }
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("SNP Viewer Projects", "*.svproj"));
         fileChooser.setTitle("Open SNP Viewer Project (.svproj) file");
         //setProgressMode(false);
@@ -2753,12 +2913,17 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     if (!snpViewSaveDirectory.exists()){
                         snpViewSaveDirectory = new File(projectFile.getParentFile() + "/" + projectName + " SNP Viewer files");
                         if (!snpViewSaveDirectory.exists()){
-                            DialogResponse response = Dialogs.showErrorDialog
-                                    (null, "Can't find project directory (" + 
+                            Alert alert = new Alert(AlertType.CONFIRMATION);
+                            ButtonType yButton = ButtonType.YES;
+                            ButtonType nButton = ButtonType.NO;
+                            alert.getButtonTypes().setAll(yButton, nButton);
+                            alert.setTitle("SnpViewer");
+                            alert.setHeaderText("Project directory not found");
+                            alert.setContentText("Can't find project directory (" + 
                                     snpViewSaveDirectory.getName() + ") - do you "
-                                    + "want to try to find it?", "Project directory "
-                                    + "not found", "SnpViewer", Dialogs.DialogOptions.YES_NO);
-                            if (DialogResponse.YES.equals(response)){
+                                    + "want to try to find it?");
+                            Optional<ButtonType> response = alert.showAndWait();
+                            if (response.get() == yButton){
                                 DirectoryChooser dirChooser = new DirectoryChooser();
                                 dirChooser.setTitle("Locate Project Folder");
                                 snpViewSaveDirectory = dirChooser.showDialog(mainWindow);
@@ -2774,9 +2939,12 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     }
                     boolean check = checkProjectFolder(snpViewSaveDirectory, tempBoth);
                     if (!check){
-                        Dialogs.showErrorDialog(null, "Corrupt project"
-                                + " folder - missing files.", "Invalid "
-                                + "project folder.", "SnpViewer");
+                        Alert error = new Alert(AlertType.ERROR);
+                        error.setTitle("SnpViewer");
+                        error.setHeaderText("Corrupt project");
+                        error.setContentText("Corrupt project"
+                                + " folder - missing files."); 
+                        error.showAndWait();
                         returnToInitialState();
                         return;
                     }
@@ -2825,8 +2993,14 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     noFilteringRadio.setSelected(true);
                     chromosomeSelector.getItems().clear();
                     ex.printStackTrace();
-                    Dialogs.showErrorDialog(null, "Could not load project file",
-                        "Load Failed", "SNP Viewer", ex);
+                    Alert error = new Alert(AlertType.ERROR);
+                    error.getDialogPane().setPrefSize(420, 200);
+                    error.setResizable(true);
+                    error.setTitle("SnpViewer");
+                    error.setHeaderText("Load Failed");
+                    error.setContentText("Could not load project file.\n" + 
+                            ex.getLocalizedMessage());
+                    error.showAndWait();
                 }
             }catch (IOException ex){
                 resetView();
@@ -2840,8 +3014,14 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 noFilteringRadio.setSelected(true);
                 chromosomeSelector.getItems().clear();
                 ex.printStackTrace();
-                Dialogs.showErrorDialog(null, "Could not load project file - IO error",
-                        "Load Failed", "SNP Viewer", ex);
+                Alert error = new Alert(AlertType.ERROR);
+                error.getDialogPane().setPrefSize(420, 200);
+                error.setResizable(true);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Load Failed");
+                error.setContentText("Could not load project file  - IO error.\n" + 
+                        ex.getLocalizedMessage());
+                error.showAndWait();
             }
         }       
     }
@@ -2918,10 +3098,14 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                    return region;
                    
                 }catch (NumberFormatException ex){
-                    Dialogs.showErrorDialog(null, "Can't display flanking SNP IDs"
-                            + " - missing required componant!\n\nPlease report this error.", 
-                            "Error!", "SNP Viewer", ex);
-                   }
+                    Alert error = new Alert(AlertType.ERROR);
+                    error.setTitle("SnpViewer");
+                    error.setHeaderText("Error!");
+                    error.setContentText("Can't display flanking SNP IDs"
+                            + " - missing required component!\n\nPlease "
+                            + "report this error.");
+                    error.showAndWait();
+                }
                 return null;
                 }
         };
@@ -2964,9 +3148,15 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 progressMessage.textProperty().unbind();
                 progressTitle.setText("");
                 progressMessage.setText("");
-                Dialogs.showErrorDialog(null, "Error finding flanking SNPs\n",
-                   "Save Region error", "SNP Viewer", saveSelectionTask.getException());
-
+                Alert error = new Alert(AlertType.ERROR);
+                error.getDialogPane().setPrefSize(420, 200);
+                error.setResizable(true);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Save Region Error");
+                error.setContentText("Error finding flanking SNPs\n" + 
+                        saveSelectionTask.getException().getLocalizedMessage());
+                saveSelectionTask.getException().printStackTrace();
+                error.showAndWait();
             }
 
         });
@@ -2981,9 +3171,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 progressMessage.textProperty().unbind();
                 progressTitle.setText("");
                 progressMessage.setText("");
-                Dialogs.showErrorDialog(null, "User cancelled region save.",
-                   "Save Region", "SNP Viewer", 
-                   saveSelectionTask.getException());
+                Alert error = new Alert(AlertType.ERROR);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Save Region Cancelled");
+                error.setContentText("User cancelled region save.");
+                error.showAndWait();
             }
 
         });
@@ -3022,9 +3214,15 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                saveRegion(currentChrom, startCoordinate, startCoordinate + selectionWidth);
             }
         }catch (Exception ex){
-            Dialogs.showErrorDialog(null, "Error determing selection coordinates"
-                    + " - see details for stack trace", "Save Region Error", 
-                    "SnpViewer", ex);
+            Alert error = new Alert(AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("Save Region Error");
+            error.setContentText("Error determing selection coordinates\n" + 
+                    ex.getLocalizedMessage());
+            ex.printStackTrace();
+            error.showAndWait();
         }
                       
     }
@@ -3053,8 +3251,16 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                        startCoordinate + selectionWidth);
             }
         }catch(Exception ex){
-            Dialogs.showErrorDialog(null, "Couldn't display flanking SNP IDs - "
-                    + "build error?", "Error Displaying flanking SNPs", "SnpViewer", ex);
+            Alert error = new Alert(AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("Error Displaying flanking SNPs");
+            error.setContentText("Couldn't display flanking SNP IDs - "
+                    + "build error?\n" + 
+                    ex.getLocalizedMessage());
+            ex.printStackTrace();
+            error.showAndWait();
         }
     }
     public void displayFlankingSnpIDs(final String chrom, final double start, 
@@ -3116,9 +3322,16 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 progressMessage.textProperty().unbind();
                 progressTitle.setText("");
                 progressMessage.setText("");
-                Dialogs.showErrorDialog(null, "Error displaying flanking SNPs\n",
-                   "Display error", "SNP Viewer", displayTask.getException());
-
+                Alert error = new Alert(AlertType.ERROR);
+                error.getDialogPane().setPrefSize(420, 200);
+                error.setResizable(true);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Display error");
+                error.setContentText("Error displaying flanking SNPs\n" + 
+                        displayTask.getException().getLocalizedMessage());
+                displayTask.getException().printStackTrace();
+                error.showAndWait();
+                
             }
 
         });
@@ -3133,9 +3346,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 progressMessage.textProperty().unbind();
                 progressTitle.setText("");
                 progressMessage.setText("");
-                Dialogs.showErrorDialog(null, "User cancelled display.",
-                   "Display error", "SNP Viewer", 
-                   displayTask.getException());
+                Alert error = new Alert(AlertType.ERROR);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Display Cancelled");
+                error.setContentText("User cancelled display.");
+                error.showAndWait();
             }
 
         });
@@ -3166,28 +3381,39 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                regionReporter.setCoordinates(result.get(0));
                regionReporter.setIds(result.get(1));
            }
-           scene.getStylesheets().add(SnpViewer.class
-                        .getResource("SnpViewerStyleSheet.css").toExternalForm());
+           //scene.getStylesheets().add(SnpViewer.class
+           //             .getResource("SnpViewerStyleSheet.css").toExternalForm());
            stage.setResizable(false);
            stage.initModality(Modality.NONE);
            
            stage.show();
         }catch (InterruptedException | ExecutionException | IOException ex){
-            Dialogs.showErrorDialog(null, "Can't display flanking SNP IDs"
-                    + " - exception caught!\n\nPlease report this error.", 
-                    "Error!", "SNP Viewer", ex);
+            Alert error = new Alert(AlertType.ERROR);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("Display Error");
+            error.setContentText("Can't display flanking SNP IDs"
+                    + " - exception caught!\n\nPlease report this error.");
+            error.showAndWait();
         }
         
     }
     
     public void writeSavedRegionsToFile(){
         if (savedRegions.size() < 1){
-            Dialogs.showErrorDialog(null, "No Saved Regions exist to write!", 
-                    "No Saved Regions", "SnpViewer");
-            return;
+            Alert error = new Alert(AlertType.ERROR);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("No Saved Regions");
+            error.setContentText("No Saved Regions exist to write!");
+            error.showAndWait();
+            return; 
         }
        final int flanks = 10;
        FileChooser fileChooser = new FileChooser();
+       if (projectFile != null){
+            fileChooser.setInitialDirectory(projectFile.getParentFile());
+        }else{
+            fileChooser.setInitialDirectory(new File(getProperty("user.home")));
+        }
        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Excel (*.xlsx)", "*.xlsx");
        fileChooser.getExtensionFilters().add(extFilter);
        fileChooser.setTitle("Write regions to Excel file (.xlsx)...");
@@ -3394,15 +3620,23 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         writeTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
             @Override
             public void handle (WorkerStateEvent e){
-                if (e.getSource().getValue() == true){
-                    Dialogs.showInformationDialog(null, "Saved regions written "
-                            + "to file " + "(" + regionFile.getName() + ")successfully",
-                        "Regions Written", "SNP Viewer");
+                if ((boolean) e.getSource().getValue() == true){
+                    Alert info = new Alert(AlertType.INFORMATION);
+                    info.setTitle("SnpViewer");
+                    info.setHeaderText("Regions Written");
+                    info.setContentText("Saved regions written "
+                            + "to file " + "(" + regionFile.getName() +
+                            ")successfully");
+                    info.showAndWait();
                 }else{
-                    Dialogs.showErrorDialog(null, "Region write failed.",
-                        "Write Failed", "SNP Viewer");
+                    Alert error = new Alert(AlertType.ERROR);
+                    error.setTitle("SnpViewer");
+                    error.setHeaderText("Write Failed");
+                    error.setContentText("Region write failed.");
+                    e.getSource().getException().printStackTrace();
+                    error.showAndWait();
                 }
-                setProgressMode(false);
+                //setProgressMode(false);
                 progressBar.progressProperty().unbind();
                 progressBar.progressProperty().set(0);
                 progressMessage.textProperty().unbind();
@@ -3421,10 +3655,15 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 progressMessage.textProperty().unbind();
                 progressMessage.setText("");
                 progressTitle.setText("Region write failed!");
-                Dialogs.showErrorDialog(null, "Error writing region to file\n",
-                   "Region write error", "SNP Viewer", 
-                   e.getSource().getException());
-               
+                Alert error = new Alert(AlertType.ERROR);
+                error.getDialogPane().setPrefSize(420, 200);
+                error.setResizable(true);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Region write error");
+                error.setContentText("Error writing region to file\n" + 
+                        e.getSource().getException().getLocalizedMessage());
+                e.getSource().getException().printStackTrace();
+                error.showAndWait();
             }
 
         });
@@ -3436,8 +3675,6 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 setProgressMode(false);
                 progressBar.progressProperty().unbind();
                 progressBar.progressProperty().set(0);
-                Dialogs.showErrorDialog(null, "Error writing region to file\n",
-                   "Region write error", "SNP Viewer");
             }
 
         });
@@ -3465,9 +3702,15 @@ public class SnpViewer extends Application implements Initializable, Serializabl
            }
            writeRegionToFile(currentChrom, startCoordinate, startCoordinate + selectionWidth);
         }catch(Exception ex){
-            Dialogs.showErrorDialog(null, "Region write failed while assessing "
-                    + "region properties.",
-                        "Write Failed", "SNP Viewer", ex);
+            Alert error = new Alert(AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("Region write error");
+            error.setContentText("Region write failed while assessing "
+                    + "region properties.\n" + ex.getLocalizedMessage());
+            ex.printStackTrace();
+            error.showAndWait();
         }
     }
     public void writeRegionToFile(final String chromosome, final double start, 
@@ -3476,6 +3719,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
          * write SNPs in region to file
          */
        FileChooser fileChooser = new FileChooser();
+       if (projectFile != null){
+            fileChooser.setInitialDirectory(projectFile.getParentFile());
+        }else{
+            fileChooser.setInitialDirectory(new File(getProperty("user.home")));
+        }
        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Excel  (*.xlsx)", "*.xlsx");
        fileChooser.getExtensionFilters().add(extFilter);
        fileChooser.setTitle("Write region to Excel file (.xlsx)...");
@@ -3621,13 +3869,23 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         writeTask.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
             @Override
             public void handle (WorkerStateEvent e){
-                if (e.getSource().getValue() == true){
-                    Dialogs.showInformationDialog(null, "Region written to file "
-                            + "(" + regionFile.getName() + ") successfully",
-                        "Region Written", "SNP Viewer");
+                if ((boolean) e.getSource().getValue() == true){
+                    Alert info = new Alert(AlertType.INFORMATION);
+                    info.setTitle("SnpViewer");
+                    info.setHeaderText("Region Written");
+                    info.setContentText("Region written to file "
+                            + "(" + regionFile.getName() + ") successfully");
+                    info.showAndWait();
                 }else{
-                    Dialogs.showErrorDialog(null, "Region write failed.",
-                        "Write Failed", "SNP Viewer");
+                    Alert error = new Alert(AlertType.ERROR);
+                    error.getDialogPane().setPrefSize(420, 200);
+                    error.setResizable(true);
+                    error.setTitle("SnpViewer");
+                    error.setHeaderText("Region write failed");
+                    error.setContentText("Region write failed.\n" + 
+                            e.getSource().getException().getLocalizedMessage());
+                    e.getSource().getException().printStackTrace();
+                    error.showAndWait();
                 }
                 setProgressMode(false);
                 progressBar.progressProperty().unbind();
@@ -3648,10 +3906,15 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 progressMessage.textProperty().unbind();
                 progressMessage.setText("");
                 progressTitle.setText("Region write failed!");
-                Dialogs.showErrorDialog(null, "Error writing region to file\n",
-                   "Region write error", "SNP Viewer", 
-                   e.getSource().getException());
-               
+                Alert error = new Alert(AlertType.ERROR);
+                error.getDialogPane().setPrefSize(420, 200);
+                error.setResizable(true);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Region write failed");
+                error.setContentText("Region write failed.\n" + 
+                        e.getSource().getException().getLocalizedMessage());
+                e.getSource().getException().printStackTrace();
+                error.showAndWait();
             }
 
         });
@@ -3663,8 +3926,11 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 setProgressMode(false);
                 progressBar.progressProperty().unbind();
                 progressBar.progressProperty().set(0);
-                Dialogs.showErrorDialog(null, "Error writing region to file\n",
-                   "Region write error", "SNP Viewer");
+                Alert error = new Alert(AlertType.ERROR);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Region write cancelled");
+                error.setContentText("Region write cancelled by user.\n");
+                error.showAndWait();
             }
 
         });
@@ -3717,10 +3983,13 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     
     public void autoFindRegions(){
         if (affObserve.isEmpty()){
-            Dialogs.showErrorDialog(null, "Find Regions can only be run when there "
+            Alert error = new Alert(AlertType.ERROR);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("No Affected samples to analyze!");
+            error.setContentText("Find Regions can only be run when there "
                     + "is at least one Affected sample in the project.  Use the "
-                    + "'Add Affected' button/menu item to add  Affected samples.", 
-                    "No Affected samples to analyze!", "SnpViewer");
+                    + "'Add Affected' button/menu item to add  Affected samples.");
+            error.showAndWait();
             return;
         }
         Stage stage =  new Stage();
@@ -3731,8 +4000,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     (FindRegionsInterfaceController) loader.getController();
             Scene scene = new Scene(page);
             stage.setScene(scene);
-            scene.getStylesheets().add(SnpViewer.class
-                        .getResource("SnpViewerStyleSheet.css").toExternalForm());
+            //scene.getStylesheets().add(SnpViewer.class
+            //            .getResource("SnpViewerStyleSheet.css").toExternalForm());
             setProgressMode(true);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.getIcons().add(new Image(this.getClass().
@@ -3801,8 +4070,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                                     Scene tableScene = new Scene(tablePane);
                                     Stage tableStage = new Stage();
                                     tableStage.setScene(tableScene);
-                                    tableScene.getStylesheets().add(SnpViewer.class
-                        .getResource("SnpViewerStyleSheet.css").toExternalForm());
+                                    //tableScene.getStylesheets().add(SnpViewer.class
+                        //.getResource("SnpViewerStyleSheet.css").toExternalForm());
                                     multiReg.displayData(foundRegions);
                                     tableStage.setTitle("Find Regions Results");
                                     tableStage.getIcons().add(new Image(this.getClass().
@@ -3810,13 +4079,23 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                                     tableStage.initModality(Modality.NONE);
                                     tableStage.show();
                                }catch (Exception ex){
-                                   Dialogs.showErrorDialog(null, "Error displaying"
-                                           + " results from Find Regions Method.",
-                                           "Find Regions Error!", "SnpViewer", ex);
+                                    Alert error = new Alert(AlertType.ERROR);
+                                    error.getDialogPane().setPrefSize(420, 200);
+                                    error.setResizable(true);
+                                    error.setTitle("SnpViewer");
+                                    error.setHeaderText("Find Regions Error!");
+                                    error.setContentText("Error displaying"
+                                           + " results from Find Regions Method.\n" 
+                                            + ex.getLocalizedMessage());
+                                    ex.printStackTrace();
+                                    error.showAndWait();
                                }
                            }else{
-                               Dialogs.showInformationDialog(null, "No regions "
-                                       + "found.", "Find Regions", "SnpViewer");
+                                Alert info = new Alert(AlertType.INFORMATION);
+                                info.setTitle("SnpViewer");
+                                info.setHeaderText("Find Regions");
+                                info.setContentText("No regions found.");
+                                info.showAndWait();
                            }
                            savedRegions.addAll(foundRegions);
                            RegionSummary sorter = new RegionSummary();
@@ -3841,8 +4120,15 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                        progressMessage.textProperty().unbind();
                        progressMessage.setText("Failed!");
                        progressTitle.textProperty().unbind();
-                       Dialogs.showErrorDialog(null, "Find Regions method failed.", 
-                    "Error!", "SnpViewer", t.getSource().getException());
+                       Alert error = new Alert(AlertType.ERROR);
+                       error.getDialogPane().setPrefSize(420, 200);
+                       error.setResizable(true);
+                       error.setTitle("SnpViewer");
+                       error.setHeaderText("Find Regions Error!");
+                       error.setContentText("Find Regions method failed.\n" + 
+                               t.getSource().getException().getLocalizedMessage());
+                       t.getSource().getException().printStackTrace();
+                       error.showAndWait();
                        setProgressMode(false);
                        progressMessage.setText("");
                        progressTitle.setText("");
@@ -3856,12 +4142,16 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                         progressMessage.textProperty().unbind();
                         progressMessage.setText("Cancelled");
                         progressTitle.textProperty().unbind();
-                        Dialogs.showErrorDialog(null, "Find Regions method Cancelled.", 
-                    "Cancelled", "SnpViewer");
-                       setProgressMode(false);
-                       progressMessage.setText("");
-                       progressTitle.setText("");
-                       progressBar.progressProperty().set(0);
+                        Alert error = new Alert(AlertType.ERROR);
+                        error.setTitle("SnpViewer");
+                        error.setHeaderText("Cancelled");
+                        error.setContentText("Find Regions method cancelled by "
+                                + "user.\n");
+                        error.showAndWait();
+                        setProgressMode(false);
+                        progressMessage.setText("");
+                        progressTitle.setText("");
+                        progressBar.progressProperty().set(0);
                         
                    }
             });
@@ -3881,8 +4171,15 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             regionFinder.start();
             
         }catch(IOException ex){
-            Dialogs.showErrorDialog(null, "Error starting Find Regions method.", 
-                    "Error!", "SnpViewer", ex);
+            Alert error = new Alert(AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("Find Regions Error");
+            error.setContentText("Error starting Find Regions method.\n"
+                    + ex.getLocalizedMessage());
+            ex.printStackTrace();
+            error.showAndWait();
             progressBar.progressProperty().unbind();
             progressMessage.textProperty().unbind();
             progressTitle.textProperty().unbind();
@@ -3963,7 +4260,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     
     private void checkQualitySelection(){
         ArrayList<RadioMenuItem> callQualityRadios = new ArrayList<>(Arrays.asList
-                (noFilteringRadio, filter99, filter95, filter90, filter85));
+                (noFilteringRadio, filter99pt9, filter99pt5, filter99, filter95, filter90));
         ArrayList<Double> callQuals = new ArrayList<>(Arrays.asList(null, 0.01, 
                 0.05, 0.10, 0.15));
         for (int i = 0; i < callQuals.size(); i++){
@@ -3987,8 +4284,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             Scene scene = new Scene(page);
             Stage stage = new Stage();
             stage.setScene(scene);
-            scene.getStylesheets().add(SnpViewer.class
-                        .getResource("SnpViewerStyleSheet.css").toExternalForm());
+            //scene.getStylesheets().add(SnpViewer.class
+            //            .getResource("SnpViewerStyleSheet.css").toExternalForm());
             AboutController controller = loader.getController();
             controller.setVersion(VERSION);
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -3998,8 +4295,15 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             
             stage.show();
         }catch(Exception ex){
-            Dialogs.showErrorDialog(null, "Error showing about information - see"
-                    + " details for stack trace", "ERROR!", "SnpViewer", ex);
+            Alert error = new Alert(AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("Error");
+            error.setContentText("Error showing about information - see"
+                    + " details for stack trace.\n" + ex.getLocalizedMessage());
+            ex.printStackTrace();
+            error.showAndWait();
         }
     }
     
