@@ -135,9 +135,10 @@ public class SnpFile extends Service<SnpFile> implements Serializable {
                 int totalLines;
                 try{
                     totalLines = LineCount.count(file);
-                }catch (Exception ex) {
+                }catch (IOException ex) {
                     //ex.printStackTrace();
-                    throw new SnpFileException();
+                    throw new SnpFileException("IOException counting lines of " 
+                            + file.getAbsolutePath(), ex);
                 }
                 BufferedReader reader = null;
                 try{
@@ -194,7 +195,7 @@ public class SnpFile extends Service<SnpFile> implements Serializable {
                             boolean headerOk = (setHeader(line));
                             if (! headerOk){
                                 System.out.println("Header no good!");
-                                throw new SnpFileException();
+                                throw new SnpFileException("Invalid Header");
                             }else{
                                 foundHeader = true;
                                 /*if (buildVersion == null){
@@ -222,7 +223,7 @@ public class SnpFile extends Service<SnpFile> implements Serializable {
                             sortBuffer.add(snpLine);
                         }catch (Exception ex){
                             Logger.getLogger(SnpFile.class.getName()).log(Level.SEVERE, null, ex);
-                            throw new SnpFileException();
+                            throw new SnpFileException(ex);
                         }
                     }
                     if (totalNoCalls > 0){
@@ -248,7 +249,7 @@ public class SnpFile extends Service<SnpFile> implements Serializable {
                     }catch (Exception ex){
                         //display error here?
                         Logger.getLogger(SnpFile.class.getName()).log(Level.SEVERE, null, ex);
-                        throw new SnpFileException();
+                        throw new SnpFileException(ex);
                     }
                     /*write sorted lines from sortBuffer to one file
                      * per chromsome plus one file for the header
@@ -282,7 +283,7 @@ public class SnpFile extends Service<SnpFile> implements Serializable {
                                  */
                             }catch (IOException ex){
                                 ex.printStackTrace();
-                                throw new SnpFileException();
+                                throw new SnpFileException(ex);
                             }finally{
                                 if (out != null){
                                     out.close();
@@ -308,7 +309,7 @@ public class SnpFile extends Service<SnpFile> implements Serializable {
                          */
                     }catch (IOException ex){
                         ex.printStackTrace();
-                        throw new SnpFileException();
+                        throw new SnpFileException(ex);
                     }finally{
                         if (out != null){
                             out.close();
@@ -333,7 +334,7 @@ public class SnpFile extends Service<SnpFile> implements Serializable {
                 }catch(IOException | SnpFileException ex){
                     //display error here?
 //                    ex.printStackTrace();
-                    throw new SnpFileException();
+                    throw new SnpFileException(ex);
                 }finally{
                     if (reader != null){
                         reader.close();
