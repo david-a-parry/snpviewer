@@ -107,12 +107,12 @@
           </font>
         </Button>
         <Button fx:id="addUnaffected" disable="true" focusTraversable="false" font="$x1" mnemonicParsing="false" onAction="#unButtonFired" prefHeight="25.0" prefWidth="117.0" style="" text="Add Unaffected" />
-        <Label prefHeight="19.0" prefWidth="75.0" text="Position:" HBox.hgrow="NEVER" />
-        <Label fx:id="positionIndicator" prefHeight="19.0" prefWidth="165.0" text="-" />
-        <Label prefHeight="19.0" prefWidth="75.0" text="Selection:" HBox.hgrow="NEVER" />
-        <TextField fx:id="selectionIndicator" disable="false" editable="false" prefHeight="29.0" prefWidth="201.0" style="" />
-        <Label prefHeight="19.0" prefWidth="46.0" text="Build:" />
-        <Label fx:id="buildLabel" prefHeight="19.0" prefWidth="14.0" />
+        <Label prefHeight="19.0" prefWidth="67.0" text="Position:" HBox.hgrow="NEVER" />
+            <TextField fx:id="positionIndicator" disable="false" editable="false" prefHeight="31.0" prefWidth="128.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
+        <Label prefHeight="19.0" prefWidth="69.0" text="Selection:" HBox.hgrow="NEVER" />
+        <TextField fx:id="selectionIndicator" disable="false" editable="false" prefHeight="29.0" prefWidth="224.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
+        <Label prefHeight="19.0" prefWidth="44.0" text="Build:" />
+        <Label fx:id="buildLabel" prefHeight="19.0" prefWidth="45.0" />
       </children>
     </HBox>
     <ProgressBar id="debugProgress" fx:id="progressBar" prefWidth="701.0" progress="0.0" AnchorPane.bottomAnchor="92.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="85.0" />

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.control.*?>
@@ -18,14 +19,14 @@
     <HBox id="HBox" alignment="CENTER_RIGHT" prefWidth="480.0001212358475" spacing="5.0" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="14.0">
       <children>
         <Label minWidth="-Infinity" prefWidth="69.99993896484375" text="Selection:" />
-        <TextField fx:id="selectionIndicator" editable="false" prefWidth="236.0000067949295" HBox.hgrow="SOMETIMES" />
+        <TextField fx:id="selectionIndicator" editable="false" prefWidth="236.0000067949295" style="-fx-background-color: transparent; -fx-border-color: transparent;" HBox.hgrow="SOMETIMES" />
         <Button fx:id="okButton" defaultButton="true" maxHeight="29.0" maxWidth="41.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="29.0" prefWidth="41.0" text="OK" />
       </children>
     </HBox>
     <HBox id="HBox" alignment="CENTER" prefWidth="342.0" spacing="5.0" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="14.0">
       <children>
         <Label text="Position:" />
-        <TextField fx:id="regionField" editable="false" prefWidth="236.0" />
+        <TextField fx:id="regionField" cacheShape="false" editable="false" prefWidth="236.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
       </children>
     </HBox>
   </children>
