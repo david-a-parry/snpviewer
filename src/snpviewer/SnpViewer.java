@@ -125,6 +125,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Hyperlink;
 
 
 /**
@@ -972,6 +973,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     + "when producing birdseed files with the Affymetrix Genotyping"
                     + " Console software.");
             warning.setHeaderText("File(s) without call confidences");
+            warning.getDialogPane().setPrefSize(420, 200);
             warning.setResizable(true);
             warning.showAndWait();
         }
@@ -1223,6 +1225,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 Pane tablePane = (Pane) tableLoader.load();
                 MultiRegionReporterController multiReg = 
                         (MultiRegionReporterController) tableLoader.getController();
+                multiReg.setParentController(this);
                 Scene tableScene = new Scene(tablePane);
                 Stage tableStage = new Stage();
                 tableStage.setScene(tableScene);
@@ -2146,6 +2149,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             ImageIO.write(SwingFXUtils.fromFXImage(image, null),
                     "png", pngFile);
             Alert info = new Alert(AlertType.INFORMATION);
+            info.getDialogPane().setPrefSize(420, 200);
+            info.setResizable(true);
             info.setTitle("SnpViewer");
             info.setHeaderText("Image Saved");
             info.setContentText("Sucessfully saved current view "
@@ -2154,9 +2159,12 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         } catch (IOException ex) {
             Alert error = new Alert(AlertType.ERROR);
             error.setTitle("SnpViewer");
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
             error.setHeaderText("PNG conversion failed");
             error.setContentText("Error encountered while attempting to convert"
-                    + " dynamic view to image file");
+                    + " dynamic view to image file.\n" 
+                    + ex.getLocalizedMessage());
             error.showAndWait();
         }
     }
@@ -2166,6 +2174,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         loadProjectButton.setDisable(true);
         if (projectRunning){
             Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.getDialogPane().setPrefSize(420, 200);
+            alert.setResizable(true);
             ButtonType yButton = ButtonType.YES;
             ButtonType nButton = ButtonType.NO;
             alert.getButtonTypes().setAll(yButton, nButton);
@@ -2186,6 +2196,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         if (success){
             projectRunning = true;
             Alert info = new Alert (AlertType.INFORMATION);
+            info.getDialogPane().setPrefSize(420, 200);
+            info.setResizable(true);
             info.setTitle("SnpViewer");
             info.setHeaderText("Project " + projectFile.getName() + " Created");
             info.setContentText("Your project will automatically"
@@ -2194,6 +2206,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         }else{
             projectLabel.setText("Project: none");
             Alert error = new Alert(AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
             error.setTitle("SnpViewer");
             error.setHeaderText("Project Creation Failed");
             error.setContentText( "Could not create new project");
@@ -2293,6 +2307,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
        boolean success = saveProject();
        if (success){
            Alert info = new Alert(AlertType.INFORMATION);
+           info.setResizable(true);
            info.setTitle("SnpViewer");
            info.setHeaderText("Save Successful");
            info.setContentText(projectFile.getName() + " saved sucessfully");
@@ -2471,6 +2486,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                inputFiles.remove(i);
            }
             Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.getDialogPane().setPrefSize(420, 300);
+            alert.setResizable(true);
             ButtonType okButton = ButtonType.OK;
             ButtonType cButton = ButtonType.CANCEL;
             alert.getButtonTypes().setAll(okButton, cButton);
@@ -2497,6 +2514,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
        int fileCounter = 1;
        if (snpViewSaveDirectory == null){
            Alert warn = new Alert(AlertType.WARNING);
+           warn.setResizable(true);
            warn.setTitle("SnpViewer");
            warn.setHeaderText("Create Project");
            warn.setContentText("Before processing input files "
@@ -2553,6 +2571,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                         String build = buildInferrer.inferBuild(snpFile);
                         if (build == null){
                             Alert error = new Alert(AlertType.ERROR);
+                            error.getDialogPane().setPrefSize(420, 300);
+                            error.setResizable(true);
                             error.setTitle("SnpViewer");
                             error.setHeaderText("Failure while adding input file.");
                             error.setContentText( "Failed to process file " 
@@ -2583,6 +2603,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                             progressTitle.setText("");
                             progressMessage.setText("");
                             Alert error = new Alert(AlertType.ERROR);
+                            error.setResizable(true);
                             error.setTitle("SnpViewer");
                             error.setHeaderText("Genome Version Error");
                             error.setContentText( "Genome versions do "
@@ -2835,9 +2856,12 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         }catch (IOException ex){
             //ex.printStackTrace();
             Alert error = new Alert(AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
             error.setTitle("SnpViewer");
             error.setHeaderText("Save Failed");
-            error.setContentText("Could not save project file - IO error" ); 
+            error.setContentText("Could not save project file - IO error.\n" + 
+                    ex.getLocalizedMessage()); 
             error.showAndWait();
             return false;
         }
@@ -2919,6 +2943,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                         snpViewSaveDirectory = new File(projectFile.getParentFile() + "/" + projectName + " SNP Viewer files");
                         if (!snpViewSaveDirectory.exists()){
                             Alert alert = new Alert(AlertType.CONFIRMATION);
+                            alert.getDialogPane().setPrefSize(420, 200);
+                            alert.setResizable(true);
                             ButtonType yButton = ButtonType.YES;
                             ButtonType nButton = ButtonType.NO;
                             alert.getButtonTypes().setAll(yButton, nButton);
@@ -2945,6 +2971,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     boolean check = checkProjectFolder(snpViewSaveDirectory, tempBoth);
                     if (!check){
                         Alert error = new Alert(AlertType.ERROR);
+                        error.setResizable(true);
                         error.setTitle("SnpViewer");
                         error.setHeaderText("Corrupt project");
                         error.setContentText("Corrupt project"
@@ -3100,11 +3127,14 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                            startAndEndSnps.get(1).getPosition(), 0, 0, 
                            startAndEndSnps.get(0).getId(), 
                            startAndEndSnps.get(1).getId());
+                   
                    return region;
                    
                 }catch (NumberFormatException ex){
                     Alert error = new Alert(AlertType.ERROR);
-                    error.setTitle("SnpViewer");
+                    error.getDialogPane().setPrefSize(420, 200);
+                    error.setResizable(true);
+            error.setTitle("SnpViewer");
                     error.setHeaderText("Error!");
                     error.setContentText("Can't display flanking SNP IDs"
                             + " - missing required component!\n\nPlease "
@@ -3177,6 +3207,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 progressTitle.setText("");
                 progressMessage.setText("");
                 Alert error = new Alert(AlertType.ERROR);
+                error.setResizable(true);
                 error.setTitle("SnpViewer");
                 error.setHeaderText("Save Region Cancelled");
                 error.setContentText("User cancelled region save.");
@@ -3352,6 +3383,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 progressTitle.setText("");
                 progressMessage.setText("");
                 Alert error = new Alert(AlertType.ERROR);
+                error.setResizable(true);
                 error.setTitle("SnpViewer");
                 error.setHeaderText("Display Cancelled");
                 error.setContentText("User cancelled display.");
@@ -3380,10 +3412,25 @@ public class SnpViewer extends Application implements Initializable, Serializabl
            RegionReporterController regionReporter =
                    loader.<RegionReporterController>getController();
            if (result == null){
-               regionReporter.setCoordinates("Error!");
+               final Hyperlink errorLink = new Hyperlink();
+               errorLink.setText("Error!");
+               regionReporter.setCoordinates(errorLink);
                regionReporter.setIds("Error!");
            }else{
-               regionReporter.setCoordinates(result.get(0));
+               String db = getUcscDb();
+               final String regionUrl = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" + db + 
+                "&position=" + result.get(0);
+               final Hyperlink coordLink = new Hyperlink();
+               coordLink.setText(result.get(0));
+               coordLink.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent e) {
+                        getHostServices().showDocument(regionUrl);
+                        coordLink.setVisited(true);
+                        coordLink.setUnderline(false);
+                    }
+                });
+               regionReporter.setCoordinates(coordLink);
                regionReporter.setIds(result.get(1));
            }
            //scene.getStylesheets().add(SnpViewer.class
@@ -3394,6 +3441,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
            stage.show();
         }catch (InterruptedException | ExecutionException | IOException ex){
             Alert error = new Alert(AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
             error.setTitle("SnpViewer");
             error.setHeaderText("Display Error");
             error.setContentText("Can't display flanking SNP IDs"
@@ -3403,9 +3452,21 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         
     }
     
+    public String getUcscDb(){
+        if (genomeVersion.equals("37")){
+            return "hg19";
+        }
+        else if (genomeVersion.equals("36")){
+            return "hg18";
+        }else{
+            return genomeVersion;
+        }
+    }
+    
     public void writeSavedRegionsToFile(){
         if (savedRegions.size() < 1){
             Alert error = new Alert(AlertType.ERROR);
+            error.setResizable(true);
             error.setTitle("SnpViewer");
             error.setHeaderText("No Saved Regions");
             error.setContentText("No Saved Regions exist to write!");
@@ -3627,6 +3688,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             public void handle (WorkerStateEvent e){
                 if ((boolean) e.getSource().getValue() == true){
                     Alert info = new Alert(AlertType.INFORMATION);
+                    info.getDialogPane().setPrefSize(420, 200);
+                    info.setResizable(true);
                     info.setTitle("SnpViewer");
                     info.setHeaderText("Regions Written");
                     info.setContentText("Saved regions written "
@@ -3635,9 +3698,12 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     info.showAndWait();
                 }else{
                     Alert error = new Alert(AlertType.ERROR);
+                    error.getDialogPane().setPrefSize(420, 200);
+                    error.setResizable(true);
                     error.setTitle("SnpViewer");
                     error.setHeaderText("Write Failed");
-                    error.setContentText("Region write failed.");
+                    error.setContentText("Region write failed.\n" + 
+                            e.getSource().getException().getLocalizedMessage());
                     e.getSource().getException().printStackTrace();
                     error.showAndWait();
                 }
@@ -3876,6 +3942,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             public void handle (WorkerStateEvent e){
                 if ((boolean) e.getSource().getValue() == true){
                     Alert info = new Alert(AlertType.INFORMATION);
+                    info.getDialogPane().setPrefSize(420, 200);
+                    info.setResizable(true);
                     info.setTitle("SnpViewer");
                     info.setHeaderText("Region Written");
                     info.setContentText("Region written to file "
@@ -3932,6 +4000,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                 progressBar.progressProperty().unbind();
                 progressBar.progressProperty().set(0);
                 Alert error = new Alert(AlertType.ERROR);
+                error.setResizable(true);
                 error.setTitle("SnpViewer");
                 error.setHeaderText("Region write cancelled");
                 error.setContentText("Region write cancelled by user.\n");
@@ -3989,6 +4058,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     public void autoFindRegions(){
         if (affObserve.isEmpty()){
             Alert error = new Alert(AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
             error.setTitle("SnpViewer");
             error.setHeaderText("No Affected samples to analyze!");
             error.setContentText("Find Regions can only be run when there "
@@ -4047,7 +4118,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     window, regionLength, checkConcordant, refineWindow, 
                     refineTolerance, minReport, minReportRun, hetTolerance,
                     dischordTolerance);
-            
+            final SnpViewer thisthis = this;
             regionFinder.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
                    @Override
                    public void handle (WorkerStateEvent t){
@@ -4072,6 +4143,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                                     Pane tablePane = (Pane) tableLoader.load();
                                     MultiRegionReporterController multiReg = 
                                             (MultiRegionReporterController) tableLoader.getController();
+                                    multiReg.setParentController(thisthis);
                                     Scene tableScene = new Scene(tablePane);
                                     Stage tableStage = new Stage();
                                     tableStage.setScene(tableScene);
@@ -4097,6 +4169,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                                }
                            }else{
                                 Alert info = new Alert(AlertType.INFORMATION);
+                                info.setResizable(true);
                                 info.setTitle("SnpViewer");
                                 info.setHeaderText("Find Regions");
                                 info.setContentText("No regions found.");
@@ -4148,6 +4221,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                         progressMessage.setText("Cancelled");
                         progressTitle.textProperty().unbind();
                         Alert error = new Alert(AlertType.ERROR);
+                        error.setResizable(true);
                         error.setTitle("SnpViewer");
                         error.setHeaderText("Cancelled");
                         error.setContentText("Find Regions method cancelled by "

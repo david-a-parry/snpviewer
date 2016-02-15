@@ -22,8 +22,10 @@ package snpviewer;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -51,7 +53,7 @@ public class RegionReporterController  {
     @FXML
     Label coordLabel;
     @FXML
-    TextField coordField;
+    Hyperlink coordLink;
     
     
     public void initialize() {
@@ -68,7 +70,8 @@ public class RegionReporterController  {
     public void setIds(String ids){
         idField.setText(ids);
     }
-    public void setCoordinates(String coord){
-        coordField.setText(coord);
+    public void setCoordinates(Hyperlink l){
+        coordLink.setText(l.getText());
+        coordLink.setOnAction(l.getOnAction());
     }
 }

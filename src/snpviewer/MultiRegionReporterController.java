@@ -23,7 +23,10 @@ package snpviewer;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -75,7 +78,7 @@ public class MultiRegionReporterController implements Initializable {
    
    NumberFormat nf = NumberFormat.getNumberInstance();
    ChromComparator chromCompare = new ChromComparator();
-   
+   SnpViewer mainController = null;
    private final ObservableList<RegionSummary> data = FXCollections.observableArrayList();
    
    @Override
@@ -103,8 +106,8 @@ public class MultiRegionReporterController implements Initializable {
         
 
         
-        MenuItem item = new MenuItem("Copy");
-        item.setOnAction(new EventHandler<ActionEvent>() {
+        MenuItem copyMenu = new MenuItem("Copy");
+        copyMenu.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 ObservableList<TablePosition> posList = snpTable.getSelectionModel().getSelectedCells();
@@ -128,8 +131,43 @@ public class MultiRegionReporterController implements Initializable {
                 Clipboard.getSystemClipboard().setContent(content);
             }
         });
+        
+        MenuItem linkMenu = new MenuItem("Go To UCSC");
+        linkMenu.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (mainController == null){
+                    return;
+                }
+                ObservableList<TablePosition> posList = snpTable.getSelectionModel().getSelectedCells();
+                LinkedHashSet<Integer> rows = new LinkedHashSet();
+                posList.stream().map((p) -> p.getRow()).forEach((r) -> {
+                    rows.add(r);
+                });
+                rows.stream().forEach((r) -> {
+                    String chrom = (String) snpTable.getColumns().get(0).getCellData(r);
+                    if (!(chrom == null)) {
+                        String start = snpTable.getColumns().get(1).getCellData(r).toString();
+                        if (!(start == null)) {
+                            String end = (String) snpTable.getColumns().get(2).getCellData(r).toString();
+                            if (!(end == null)) {
+                                String region = "chr" + chrom + ":" + start + "-" + end;
+                                String db = mainController.getUcscDb();
+                                final String regionUrl = 
+                                        "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" 
+                                        + db +
+                                        "&position=" + region;
+                                mainController.getHostServices().showDocument(regionUrl);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        
         ContextMenu menu = new ContextMenu();
-        menu.getItems().add(item);
+        menu.getItems().add(linkMenu);
+        menu.getItems().add(copyMenu);
         snpTable.setContextMenu(menu);
         
         
@@ -172,5 +210,9 @@ public class MultiRegionReporterController implements Initializable {
         snpTextSummary.setText(summaryString.toString());
         totalLength /= 1000000;
         summaryLabel.setText(totalRegions + " regions/" + nf.format(totalLength) + " Mb");
+    }
+    
+    public void setParentController(SnpViewer parentController){
+        mainController = parentController;
     }
 }

@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="142.0" prefWidth="374.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="snpviewer.RegionReporterController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="142.0" prefWidth="374.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="snpviewer.RegionReporterController">
   <children>
       <VBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="11.0" prefHeight="142.0" prefWidth="374.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -17,10 +17,10 @@
               <TextField fx:id="idField" editable="false" prefWidth="252.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" HBox.hgrow="ALWAYS" />
             </children>
           </HBox>
-          <HBox id="HBox" alignment="CENTER" layoutY="41.0" spacing="5.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="25.0">
+          <HBox id="HBox" alignment="CENTER_LEFT" layoutY="41.0" spacing="5.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="25.0">
             <children>
               <Label fx:id="coordLabel" prefHeight="19.0" prefWidth="108.0" text="coordinates:" textAlignment="RIGHT" />
-              <TextField fx:id="coordField" editable="false" prefWidth="252.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" HBox.hgrow="ALWAYS" />
+                  <Hyperlink fx:id="coordLink" text="region" />
             </children>
           </HBox>
             <HBox>
