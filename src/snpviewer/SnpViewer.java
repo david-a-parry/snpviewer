@@ -1471,7 +1471,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     
     public void cacheChromsFired(){
         Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.getDialogPane().setPrefSize(420, 200);
+        alert.getDialogPane().setPrefSize(420, 250);
+        alert.setResizable(true);
         ButtonType cButton = ButtonType.CANCEL;
         ButtonType okButton = ButtonType.OK;
         alert.getButtonTypes().setAll(okButton, cButton);
@@ -2196,7 +2197,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         if (success){
             projectRunning = true;
             Alert info = new Alert (AlertType.INFORMATION);
-            info.getDialogPane().setPrefSize(420, 200);
+            info.getDialogPane().setPrefSize(420, 250);
             info.setResizable(true);
             info.setTitle("SnpViewer");
             info.setHeaderText("Project " + projectFile.getName() + " Created");
@@ -2486,7 +2487,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                inputFiles.remove(i);
            }
             Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.getDialogPane().setPrefSize(420, 300);
+            alert.getDialogPane().setPrefSize(420, 250);
             alert.setResizable(true);
             ButtonType okButton = ButtonType.OK;
             ButtonType cButton = ButtonType.CANCEL;
@@ -2571,7 +2572,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                         String build = buildInferrer.inferBuild(snpFile);
                         if (build == null){
                             Alert error = new Alert(AlertType.ERROR);
-                            error.getDialogPane().setPrefSize(420, 300);
+                            error.getDialogPane().setPrefSize(420, 250);
                             error.setResizable(true);
                             error.setTitle("SnpViewer");
                             error.setHeaderText("Failure while adding input file.");
@@ -2640,7 +2641,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                     progressMessage.textProperty().unbind();
                    // progressMessage.setText("");
                     Alert error = new Alert(AlertType.ERROR);
-                    error.getDialogPane().setPrefSize(420, 200);
+                    error.getDialogPane().setPrefSize(420, 220);
                     error.setResizable(true);
                     error.setTitle("SnpViewer");
                     error.setHeaderText("Failed to process file " 
@@ -2943,7 +2944,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
                         snpViewSaveDirectory = new File(projectFile.getParentFile() + "/" + projectName + " SNP Viewer files");
                         if (!snpViewSaveDirectory.exists()){
                             Alert alert = new Alert(AlertType.CONFIRMATION);
-                            alert.getDialogPane().setPrefSize(420, 200);
+                            alert.getDialogPane().setPrefSize(420, 220);
                             alert.setResizable(true);
                             ButtonType yButton = ButtonType.YES;
                             ButtonType nButton = ButtonType.NO;
