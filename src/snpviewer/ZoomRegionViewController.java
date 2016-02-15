@@ -35,9 +35,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Dialogs;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
@@ -49,7 +50,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javax.imageio.ImageIO;
 
 /**
@@ -64,13 +64,13 @@ public class ZoomRegionViewController implements Initializable {
     @FXML
     SplitPane splitPane;
     @FXML
-    final TextField regionField = new TextField();
+    TextField regionField;
     @FXML
-    final TextField selectionIndicator = new TextField();
+    TextField selectionIndicator;
     @FXML
-    final Label sampleLabel = new Label();
+    Label sampleLabel;
     @FXML
-    final ContextMenu cm = new ContextMenu();
+    ContextMenu cm = new ContextMenu();
     @FXML
     Pane selectionOverlayPane;
     
@@ -363,7 +363,8 @@ public class ZoomRegionViewController implements Initializable {
                         return;
                     }
                    double coordinate = regionStart + (regionLength/splitPane.getWidth() * e.getX());
-                   regionField.setText("chr" + chrom + ":" + nf.format(coordinate));
+                   
+                   setRegionLabel("chr" + chrom + ":" + nf.format(coordinate));
                }
        });
         
@@ -450,18 +451,33 @@ public class ZoomRegionViewController implements Initializable {
         }
         WritableImage image = splitPane.snapshot(null, null);
         if (image == null){
-            Dialogs.showErrorDialog(null, "Error attempting to save zoomed view"
-                    + " to image file","PNG conversion failed", "SNP View");
+            Alert error = new Alert(Alert.AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("PNG conversion failed");
+            error.setContentText("Error attempting to save zoomed view"
+                    + " to image file");
+            error.showAndWait();
             return;
         }
         try{
             ImageIO.write(SwingFXUtils.fromFXImage(image, null),
                     "png", pngFile);
-            Dialogs.showInformationDialog(null, "Sucessfully saved current view "
-                    + "to " + pngFile.getName(), "Image Saved", "SNP View");
-        } catch (IOException ex) {
-            Dialogs.showErrorDialog(null, "Error attempting to save zoomed view "
-                    + " to image file","PNG conversion failed", "SNP View", ex);
+            Alert info = new Alert(AlertType.INFORMATION);
+            info.setTitle("SnpViewer");
+            info.setHeaderText("Image Saved");
+            info.setContentText("Sucessfully saved current view to " + 
+                    pngFile.getName());
+        }catch (IOException ex) {
+            Alert error = new Alert(Alert.AlertType.ERROR);
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
+            error.setTitle("SnpViewer");
+            error.setHeaderText("PNG conversion failed");
+            error.setContentText("Error attempting to save zoomed view "
+                    + " to image file\n" + ex.getLocalizedMessage());
+            error.showAndWait();
         }
     }
     
