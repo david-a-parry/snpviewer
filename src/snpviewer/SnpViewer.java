@@ -126,6 +126,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
+import javafx.stage.WindowEvent;
 
 
 /**
@@ -347,7 +348,10 @@ public class SnpViewer extends Application implements Initializable, Serializabl
             primaryStage.show();
             primaryStage.getIcons().add(new Image(this.getClass().
                     getResourceAsStream("icon.png")));
-            
+            primaryStage.setOnCloseRequest((WindowEvent e) -> {
+                Platform.exit();
+                System.exit(0);
+            });
             /*primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                 @Override
                 public void handle(WindowEvent event) {
