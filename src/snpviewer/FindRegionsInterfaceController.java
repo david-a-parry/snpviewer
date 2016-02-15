@@ -30,9 +30,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Dialogs;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyEvent;
@@ -343,10 +343,16 @@ public class FindRegionsInterfaceController  implements Initializable {
             Double value = Double.parseDouble(txt);
             if (value < min || value > max){
                 if (showError){
-                    Dialogs.showErrorDialog(null, "Invalid value (" + txt + ") for "
-                    + "'" + name + "'.\n\nPlease enter a value between " + nf.format(min) 
-                    + " and " + nf.format(max) + ".", "Please choose a valid number for " 
-                    + name +".", "Snp View");
+                    Alert error = new Alert(Alert.AlertType.ERROR);
+                    error.getDialogPane().setPrefSize(420, 200);
+                    error.setResizable(true);
+                    error.setTitle("SnpViewer");
+                    error.setHeaderText("Please choose a valid number for " 
+                    + name + ".");
+                    error.setContentText("Invalid value (" + txt + ") for "
+                    + "'" + name + "'.\n\nPlease enter a value between " + 
+                            nf.format(min) + " and " + nf.format(max) + ".");
+                    error.showAndWait();
                 }
                 field.setText(defValue);
                 return false;
@@ -354,10 +360,17 @@ public class FindRegionsInterfaceController  implements Initializable {
             }
         }catch (NumberFormatException ex){
             if (showError){
-                Dialogs.showErrorDialog(null, "Invalid number format (" + txt + ") "
-                    +"for '"+ name +"'.\n\nPlease enter a value between " + nf.format(min) 
-                    + " and " + nf.format(max) + ".", 
-                    "Please enter a valid number for " + name +".", "Snp View", ex);
+                Alert error = new Alert(Alert.AlertType.ERROR);
+                error.getDialogPane().setPrefSize(420, 200);
+                error.setResizable(true);
+                error.setTitle("SnpViewer");
+                error.setHeaderText("Please enter a valid number for " + 
+                        name +".");
+                error.setContentText("Invalid number format (" + txt + ") "
+                    +"for '"+ name +"'.\n\nPlease enter a value between " + 
+                        nf.format(min) + " and " + nf.format(max) + ".\n" + 
+                        ex.getLocalizedMessage());
+                error.showAndWait();
             }
             field.setText(defValue);
             return false;
@@ -373,20 +386,32 @@ public class FindRegionsInterfaceController  implements Initializable {
             Integer value = Integer.parseInt(txt);
             if (value < min || value > max){
                 if(showError){
-                    Dialogs.showErrorDialog(null, "Invalid value (" + txt + ") for "
+                    Alert error = new Alert(Alert.AlertType.ERROR);
+                    error.getDialogPane().setPrefSize(420, 200);
+                    error.setResizable(true);
+                    error.setTitle("SnpViewer");
+                    error.setHeaderText("Please choose a valid number for " 
+                    + name +".");
+                    error.setContentText("Invalid value (" + txt + ") for "
                     + "'" + name + "'.\nPlease enter a value between " + min 
-                    + " and " + max + ".", "Please choose a valid number for " 
-                    + name +".", "Snp View");
+                    + " and " + max + ".");
+                    error.showAndWait();   
                 }
                 field.setText(defValue);
                 return false;
             }
         }catch (NumberFormatException ex){
             if(showError){
-                Dialogs.showErrorDialog(null, "Invalid number format (" + txt + ") "
-                    +"for '"+ name +"'.\nPlease enter a value between " + min 
-                    + " and " + max + ".", 
-                    "Please enter a valid number for " + name +".", "Snp View", ex);
+                Alert error = new Alert(Alert.AlertType.ERROR);
+                    error.getDialogPane().setPrefSize(420, 200);
+                    error.setResizable(true);
+                    error.setTitle("SnpViewer");
+                    error.setHeaderText("Please enter a valid number for " + 
+                            name +".");
+                    error.setContentText("Invalid value (" + txt + ") for "
+                    + "'" + name + "'.\nPlease enter a value between " + min 
+                    + " and " + max + ".\n" + ex.getLocalizedMessage());
+                    error.showAndWait();   
             }
             field.setText(defValue);
             return false;
