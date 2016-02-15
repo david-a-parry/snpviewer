@@ -177,7 +177,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
     @FXML
     SplitPane labelSplitPane;
     @FXML
-    Label positionIndicator;
+    TextField positionIndicator;
     @FXML
     TextField selectionIndicator;
     @FXML
@@ -400,6 +400,8 @@ public class SnpViewer extends Application implements Initializable, Serializabl
         displaySavedsRegionsMenu.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN));
         outputSavedRegionsMenu.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
         removeSampleMenu.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
+        
+        
         //set radio menu item toggle group
         ArrayList<RadioMenuItem> callQualityRadios = new ArrayList<>(Arrays.asList(
             noFilteringRadio, filter99pt9, filter99pt5, filter99, filter95, filter90)); 
@@ -1135,6 +1137,9 @@ public class SnpViewer extends Application implements Initializable, Serializabl
            
         }catch(ChromosomeLength.ChromosomeLengthException | IOException ex){
             Alert error = new Alert(AlertType.ERROR);
+            ex.printStackTrace();
+            error.getDialogPane().setPrefSize(420, 200);
+            error.setResizable(true);
             error.setTitle("SnpViewer");
             error.setHeaderText("Error displaying zoomed region");
             error.setContentText(ex.getMessage());
@@ -3383,7 +3388,7 @@ public class SnpViewer extends Application implements Initializable, Serializabl
            }
            //scene.getStylesheets().add(SnpViewer.class
            //             .getResource("SnpViewerStyleSheet.css").toExternalForm());
-           stage.setResizable(false);
+           stage.setResizable(true);
            stage.initModality(Modality.NONE);
            
            stage.show();
