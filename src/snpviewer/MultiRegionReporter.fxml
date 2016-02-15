@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0000999999975" prefWidth="671.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="snpviewer.MultiRegionReporterController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="429.0" prefWidth="694.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="snpviewer.MultiRegionReporterController">
   <children>
     <TabPane prefHeight="400.0000999999975" prefWidth="671.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <tabs>
@@ -14,14 +14,14 @@
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
-                <TableView fx:id="snpTable" editable="false" prefHeight="368.0" prefWidth="671.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <TableView fx:id="snpTable" editable="false" prefHeight="358.0" prefWidth="694.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="38.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <columns>
                     <TableColumn fx:id="chromCol" maxWidth="5000.0" minWidth="10.0" prefWidth="103.0" text="Chromosome" />
                     <TableColumn fx:id="startPosCol" maxWidth="5000.0" minWidth="10.0" prefWidth="115.0" text="Start Coordinate" />
                     <TableColumn fx:id="endPosCol" maxWidth="5000.0" minWidth="10.0" prefWidth="111.0" text="End Coordinate" />
                     <TableColumn fx:id="startIdCol" maxWidth="5000.0" minWidth="10.0" prefWidth="112.0" text="Start rsID" />
                     <TableColumn fx:id="endIdCol" maxWidth="5000.0" minWidth="10.0" prefWidth="106.0" text="End rsID" />
-                    <TableColumn fx:id="lengthCol" maxWidth="5000.0" minWidth="10.0" prefWidth="126.0" text="Length" />
+                    <TableColumn fx:id="lengthCol" maxWidth="5000.0" minWidth="10.0" prefWidth="146.0" text="Length" />
                   </columns>
                 </TableView>
               </children>
