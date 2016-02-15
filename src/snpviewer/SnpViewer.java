@@ -137,7 +137,7 @@ import javafx.scene.control.Hyperlink;
  */
 public class SnpViewer extends Application implements Initializable, Serializable {
     
-    String VERSION = "0.9.2";
+    String VERSION = "0.9.3";
     
     ArrayList<SnpFile> affFiles = new ArrayList<>();
     ObservableList<SnpFile> affObserve = FXCollections.observableList(affFiles);
